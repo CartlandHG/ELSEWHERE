@@ -1,0 +1,604 @@
+path	lines	language	role	verdict	reason
+weft/BASELINE-README.md	15	Markdown	native fast-garden kit packaging note	RETIRE	-; Superseded 19 Sep fixture-kit packaging note for the garden desktop check; points at evidence outside the tree.
+weft/DRIFT-FIX-20260925.md	6	Markdown	garden adapter pin swap note	RETIRE	-; Superseded change note; the pin it records (98fd045f) is enforced in worker/garden_desktop_entry.py, which stays in frozen src.
+weft/FLICKER-CHANGE.md	7	Markdown	wb_frame_copy flicker repair note	RETIRE	-; Superseded change note; the repair itself lives in native-source base-driver wb_frame_copy, which the driver component carries with its own regress.
+weft/Makefile	13	make	weft tree top Makefile	MERGE	weft/ (kit top Makefile); Its duty (build native-source, run tests/run.sh) becomes the kit weft/ component Makefile set; uses house mk include.
+weft/README	22	text	weft tree overview	MERGE	weft/ (kit README / weft.7); Tree map of native-source vs worker; folds into the kit weft.7 component overview with garden parts marked deferred.
+weft/README.md	25	Markdown	garden latency checkpoint README	RETIRE	-; Superseded 19 Sep garden checkpoint/evidence narrative; garden waits and its claims point at ../RETURN.md outside the tree.
+weft/check_camera_geometry_join.py	56	Python	garden camera entry check (Python)	DEFER	-; Garden desktop-entry camera control (subprocess runs garden_desktop_entry.py); garden waits.
+weft/deps/compare/Makefile	42	make	compare build and controls	MERGE	weft/views; Build rules fold into weft/views Makefile linking canonical weft/lib raster instead of the inputs/raster copies; keeps -Dcalloc allocation-failure seam.
+weft/deps/compare/README.md	123	Markdown	weft-compare contract prose	MERGE	weft/views; Contract (refusals, receipt format, output modes 0700/0600, no-alias rule) becomes the weft-compare manual; Warren paths and evidence links dropped.
+weft/deps/compare/compare_snapshots.c	299	C	weft-compare CLI (file/PPM/sha256 door)	PORT	weft/views; Readonly comparison command with O_NOFOLLOW/O_EXCL, metadata-change refusal and output cleanup; needs pledge/unveil added (compare cmd, later step).
+weft/deps/compare/input-pins.json	56	JSON	provenance pins of copied inputs	RETIRE	-; Provenance record of Warren copy paths; superseded once inputs live as canonical kit files.
+weft/deps/compare/inputs/diff/weft_doc_diff.c	589	C	document diff generator	PORT	weft/views; Only copy in the tree of weft_doc_diff; native-source room-motion and launcher Makefiles build it from here.
+weft/deps/compare/inputs/diff/weft_doc_diff.h	49	C	document diff API	PORT	weft/views; Only copy of the diff header; consumed by native-source room-motion/launcher builds.
+weft/deps/compare/inputs/raster/room-motion/component/core/weft_raster.c	505	C	drifted copy of room-motion raster	RETIRE	weft/lib (canonical); Older ancestor of native-source core/weft_raster.c (diff: 23 lines removed, 313 added in native-source: help overlay, shortcuts, images); only compare's own Makefile uses it.
+weft/deps/compare/inputs/raster/room-motion/component/core/weft_raster.h	46	C	drifted copy of raster header	RETIRE	weft/lib (canonical); Subset of native-source weft_raster.h (lacks wn_raster_shortcuts/help/layers/wn_image); canonical copy is weft/lib.
+weft/deps/compare/inputs/raster/room-motion/component/core/weft_scene.c	355	C	drifted copy of scene validator	RETIRE	weft/lib (canonical); Differs from native-source only by lacking the WN_VIEWPANE flag admission (8 diff lines); canonical copy is weft/lib.
+weft/deps/compare/inputs/raster/room-motion/component/core/weft_scene.h	87	C	drifted copy of scene header	RETIRE	weft/lib (canonical); Lacks WN_VIEWPANE and differs in header comment only; canonical copy is weft/lib.
+weft/deps/compare/inputs/raster/terminal/weft_terminal.h	38	C	drifted copy of terminal header	RETIRE	weft/pty (canonical); Differs from native-source/terminal/weft_terminal.h only in the leading comment; canonical copy is weft/pty.
+weft/deps/compare/inputs/view/weft_document_view.c	238	C	document view model	PORT	weft/views; Only copy of weft_document_view; native-source room-motion/launcher build it from here.
+weft/deps/compare/inputs/view/weft_document_view.h	82	C	document view API	PORT	weft/views; Only copy of the view header; includes weft_terminal.h and weft_scene.h, which must resolve to canonical weft/lib and weft/pty.
+weft/deps/compare/native_checks.py	230	Python	CLI IO controls (Python)	MERGE	weft/views/regress; 37 CLI controls (symlink refusal, existing-output preservation, font bound, forced output limit cleanup) are red controls for kept safeguards; rewrite as sh regress.
+weft/deps/compare/ppm_preview.py	25	Python	PPM to PNG viewing copy	RETIRE	-; Viewing convenience for a README image; no product duty.
+weft/deps/compare/run_native.py	73	Python	ssh transport Debian to Warren	RETIRE	-; Network transport (ssh BatchMode to host warren) for a one-off build leg; violates no-network test rule and has no product duty.
+weft/deps/compare/test_compare.c	187	C	comparison/view assertions (C)	MERGE	weft/views/regress; 79 assertions incl. all glue allocation failures via -Dcalloc seam; becomes weft/views regress.
+weft/deps/compare/test_refusals.c	45	C	malformed diff script refusals (C)	MERGE	weft/views/regress; Red controls for partial/malformed producer scripts; becomes weft/views regress.
+weft/deps/compare/weft_snapshot_compare.c	155	C	pure comparison glue	PORT	weft/views; Canonical weft_snapshot_compare; built by native-source room-motion and launcher from here.
+weft/deps/compare/weft_snapshot_compare.h	44	C	comparison glue API	PORT	weft/views; Canonical header for the comparison glue.
+weft/deps/dr/Makefile	48	make	dr build and test wiring	MERGE	weft/dr; Rules (C99 -Werror, UB-trap builds, seam build) fold into weft/dr Makefile; -Wl,--no-execute-only and -Dfsync seam to be reviewed.
+weft/deps/dr/NEXT.md	75	Markdown	M01-03 leg closing note	RETIRE	-; Superseded leg/packaging note (repairs 7-8 history); the repairs are in code and README, controls in tests.
+weft/deps/dr/README.md	224	Markdown	dr contract and store layout	MERGE	weft/dr; Identity model, store layout, limits, durability ladder and vi save-boundary account become drctl(1)/dr(3) manual text.
+weft/deps/dr/dr.c	155	C	dr portable core (record, names, hex)	PORT	weft/dr; OS-free record build/parse with per-byte docid admission (embedded NUL refused); canonical copy used by native-source builds.
+weft/deps/dr/dr.h	115	C	dr API	PORT	weft/dr; Public API with resolve failure contract and fault hooks.
+weft/deps/dr/dr_openbsd.c	557	C	dr OpenBSD store adapter	PORT	weft/dr; Holds the CAS commit, linkat/renameat+fsync commit points, owner/mode fstat checks and corruption refusals.
+weft/deps/dr/drctl.c	207	C	drctl CLI	PORT	weft/dr; Store CLI (init/commit/head/cat/info/view/view-set); needs pledge/unveil and a manual; fault-commit hook to be gated or kept test-only.
+weft/deps/dr/tests/VIOLETTE-SAVED-REVISION-BOUNDARIES-20260913-r1.c	77	C	independent boundary controls (C)	MERGE	weft/dr/regress; Red controls for record-overflow, checked builder and null-store under UB trap.
+weft/deps/dr/tests/run-boundaries.sh	14	sh	boundary control runner (sh)	MERGE	weft/dr/regress; sh runner for the boundary controls in a scratch cwd.
+weft/deps/dr/tests/run-cli-checks.sh	168	sh	27 drctl CLI checks (sh, ktrace)	MERGE	weft/dr/regress; End-to-end controls incl. ktrace witnesses of no fork/exec and init directory fsyncs; copies kdump into ./evidence (path to drop).
+weft/deps/dr/tests/run-m01-seam.sh	26	sh	M01 seam control runner (sh)	MERGE	weft/dr/regress; Builds the fsync-fault seam control; duplicates Makefile targets so may fold into the Makefile.
+weft/deps/dr/tests/test_m01_seam.c	203	C	parent-fsync fault and zeroed-output controls (C)	MERGE	weft/dr/regress; Red controls for fd leak on failed parent fsync and resolve output clearing; uses -Dfsync macro seam.
+weft/deps/dr/tests/test_revisions.c	390	C	77 dr API checks (C)	MERGE	weft/dr/regress; Main dr control suite (CAS, stale writer, staged faults, corruption, views, busy lock, bounds).
+weft/deps/dr/vi-experiment/README.md	58	Markdown	vi/ex write-trace findings	RETIRE	-; Research: nvi :w writes in place with O_TRUNC; the conclusion already lives in dr README and moves to the dr manual CAVEATS.
+weft/deps/dr/vi-experiment/ex-kdump.txt	890	text	raw ex ktrace dump	RETIRE	-; Research trace evidence; not product.
+weft/deps/dr/vi-experiment/pty-drive.c	79	C	forkpty driver for vi trace	RETIRE	-; Research harness (forkpty/libutil) for the trace; not product.
+weft/deps/dr/vi-experiment/run-traces.sh	65	sh	ktrace capture script	RETIRE	-; Research script that drives vi/ex under ktrace; not product.
+weft/deps/dr/vi-experiment/vi-kdump.txt	1977	text	raw vi ktrace dump	RETIRE	-; Research trace evidence; not product.
+weft/deps/svs/Makefile	45	make	svs example build	MERGE	weft/views; Rules fold into weft/views; its check target reads fixtures from ../../M02 which is absent from the tree (broken reference).
+weft/deps/svs/README.md	107	Markdown	saved-view session contract	MERGE	weft/views; Laws (pinned holds, follow on verified observation, sticky clamp flag, refusal table) become the saved-views manual text.
+weft/deps/svs/run.sh	45	sh	M02-04 leg runner	RETIRE	-; Leg runner expecting DEP_ROOT=../../M02 extracted inputs (absent); its duties (dr battery, example normal+UB) move to dr and views regress.
+weft/deps/svs/svs.c	396	C	saved-view session state module	PORT	weft/views; Pure C bounded session (8 slots, no IO); canonical copy built by native-source room-motion and launcher.
+weft/deps/svs/svs.h	167	C	saved-view session API	PORT	weft/views; Public API for svs.
+weft/deps/svs/svs_example.c	387	C	finite svs+dr+compare journey	MERGE	weft/views/regress; Native example proving refusals and flat descriptor floor across the journey; becomes a views regress with in-tree fixtures.
+weft/font.816	0	binary font	8x16 bitmap font asset	PORT	weft/view; Runtime font pinned by sha256 954ce847; used by weft-view and the producer; needs a build rule or a documented asset pin.
+weft/font.816.sidecar.md	17	Markdown	font provenance sidecar	MERGE	weft/view; Provenance/pin prose folds into the kit asset record or weft-view(1) FILES.
+weft/journeys/noticeboard.json	109	JSON	garden station journey fixture	DEFER	-; Garden station-journey fixture used by run-garden-station-checks.sh; garden waits.
+weft/journeys/signpost.json	73	JSON	garden station journey fixture	DEFER	-; Garden station-journey fixture; garden waits.
+weft/journeys/tools.json	73	JSON	garden station journey fixture	DEFER	-; Garden station-journey fixture; garden waits.
+weft/journeys/workbench.json	55	JSON	garden station journey fixture	DEFER	-; Garden station-journey fixture; garden waits.
+weft/native-source/CONTROL-SCHEMA.md	120	Markdown	desktop chord schema prose	MERGE	weft/keys (keymap/bindings manual); Chord table and focus rules are contract prose for the key layer and belong in its mdoc manual, not a loose markdown file.
+weft/native-source/DUCK-PROVENANCE.md	74	Markdown	duck sprite provenance note	MERGE	weft/lib (weft_raster manual/source comment); Sprite origin (WEFT3D billboard.py) and colours are the only attribution of pixels the raster still draws, so a short provenance comment must travel with weft_raster.
+weft/native-source/Makefile	28	make	native assembly build	MERGE	weft/ (top Makefile + view/seed Makefiles); Build glue reaching into room-motion/controls; its targets are reexpressed as per-component BSD make files.
+weft/native-source/base-driver/CONTRACT.md	74	Markdown	supervisor custody contract	MERGE	weft/driver (wp_supervise manual); Load-bearing custody contract (child-end barrier, ECHILD, bounded reap, abandon scope) becomes the driver's mdoc manual.
+weft/native-source/base-driver/Makefile	81	make	driver build+custody check targets	PORT	weft/driver/Makefile + regress/Makefile; Keep -D seam substitution and UB targets; split check targets into regress/.
+weft/native-source/base-driver/PROVENANCE.md	58	Markdown	source/evidence ownership map	MERGE	weft/driver (header attribution); Hash/evidence-archive map is superseded packaging, but per-file authorship lineage should survive as a few attribution lines.
+weft/native-source/base-driver/README.md	65	Markdown	r2 review-candidate readme	MERGE	weft/driver (manual); Scope and bounds statements fold into the driver manual; review-candidate narrative retires.
+weft/native-source/base-driver/kms/abi/drm.h	1398	C	copied libdrm drm.h snapshot (MIT)	MERGE	weft/driver/kms (trimmed ABI header); Only DRM_IOCTL base macros and __u32/__u64 typedefs are used; replace 1398 copied lines with a trimmed header keeping the MIT notice, or base/xbase header if verified present.
+weft/native-source/base-driver/kms/abi/drm_mode.h	1360	C	copied libdrm drm_mode.h snapshot (MIT)	MERGE	weft/driver/kms (trimmed ABI header); Only about nine structs and eleven MODE ioctls are used; trim to those with notice retained.
+weft/native-source/base-driver/kms/wd_kms_openbsd.c	364	C	fixed-record KMS ioctl organ	PORT	weft/driver/kms; Bounded, receipted dumb-buffer KMS calls are the core of the driver.
+weft/native-source/base-driver/kms/wd_kms_openbsd.h	97	C	KMS organ interface	PORT	weft/driver/kms; Public interface of the KMS organ.
+weft/native-source/base-driver/tests/inherited_checks.inc	294	C	adapter check bodies included by test_adapter	PORT	weft/driver/regress; Shared assertion bodies for adapter regress.
+weft/native-source/base-driver/tests/link_only.c	4	C	production link check	PORT	weft/driver/regress; Proves the production adapter links with libc only.
+weft/native-source/base-driver/tests/receipt_abi.c	17	C	receipt layout print	PORT	weft/driver/regress; Detects receipt ABI growth; make it compare against a pinned expected output so it can go red.
+weft/native-source/base-driver/tests/test_adapter.c	410	C	adapter fixture with substituted device seams	PORT	weft/driver/regress; 185-assertion adapter control with all device edges substituted.
+weft/native-source/base-driver/tests/test_adapter_abandon.c	109	C	ECHILD/abandon custody control	PORT	weft/driver/regress; Red control for the unreaped-child barrier and parent-only abandon.
+weft/native-source/base-driver/tests/test_frame_scanout.c	106	C	per-store flicker oracle	PORT	weft/driver/regress; Red control against erase-then-copy flicker in wb_frame.
+weft/native-source/base-driver/tests/test_kms.c	407	C	KMS organ scenario fixture	PORT	weft/driver/regress; Injected-ioctl scenarios for every KMS call.
+weft/native-source/base-driver/tests/test_publication.c	95	C	shared-receipt publication test	PORT	weft/driver/regress; Exercises lock-free shared receipt publication across real fork.
+weft/native-source/base-driver/tests/test_quiescence.c	248	C	supervisor custody intake controls	PORT	weft/driver/regress; 12 cases incl. unreaped-child red control; uses real fork and timing so review for clock dependence.
+weft/native-source/base-driver/wb_frame.c	61	C	raster validate/copy into scanout	PORT	weft/driver; Pure frame transfer organ.
+weft/native-source/base-driver/wb_frame.h	27	C	frame transfer interface	PORT	weft/driver; Interface for wb_frame.
+weft/native-source/base-driver/wp_atomic_openbsd.h	48	C	process-shared atomic shim	PORT	weft/driver; Needed for lock-free shared receipts; uses __atomic builtins (compiler extension) which needs a written exception or C11 stdatomic decision.
+weft/native-source/base-driver/wp_drm_adapter.c	450	C	DRM paced adapter (begin/child/restore/abandon)	PORT	weft/driver; Owns card0 open, dumb buffer, scanout, restore and readback under supervisor.
+weft/native-source/base-driver/wp_paced_body.inc	207	C	paced set_crtc/dirty loop	PORT	weft/driver; Measured pacing body included by the adapter.
+weft/native-source/base-driver/wp_paced_drm.h	100	C	paced adapter interface and receipts	PORT	weft/driver; Public paced-present interface used by the presenter.
+weft/native-source/base-driver/wp_supervisor.h	86	C	supervisor interface	PORT	weft/driver; Defines WP_REAP_POLLS_MAX/BUDGET and the receipt custody fields.
+weft/native-source/base-driver/wp_supervisor_openbsd.c	232	C	display-child supervisor	PORT	weft/driver; Load-bearing safeguard: bounded reap, ECHILD authority loss, exact-PID kill, recovery skipped when unreaped.
+weft/native-source/controls/bindings/Makefile	25	make	build+run for six keymap/menu/catalogue tests	MERGE	weft/keys/regress; Recipe folds into the keys regress Makefile; it has only a 'test' target and is not wired into native-source check.
+weft/native-source/controls/bindings/test_bindings.c	164	C	keymap arming/remap/one-shot gesture control	MERGE	weft/keys/regress; Proves weft_bindings+weft_house_input chord law incl. malformed/colliding map and missing-file refusal without fallback (red cases).
+weft/native-source/controls/bindings/test_catalogue.c	190	C	action catalogue bounds control	MERGE	weft/keys/regress; Proves weft_catalogue limits (e.g. 129-byte name refused); pure C, no clock/devices.
+weft/native-source/controls/bindings/test_commands.c	120	C	explicit selection vs keyboard intent equivalence	MERGE	weft/keys/regress; Proves named-command selection refuses unknown/absent-observation/missing-generation without stale intent (red cases).
+weft/native-source/controls/bindings/test_menu.c	111	C	Actions menu controller control	MERGE	weft/keys/regress; Proves weft_menu typing/selection and non-ASCII/unknown input refusal without state mutation.
+weft/native-source/controls/bindings/test_menu_claudia.c	161	C	independent menu boundary probes	MERGE	weft/keys/regress; Second-author boundary probes of weft_menu (absent target, confirmation wording); fold beside test_menu as one suite.
+weft/native-source/controls/bindings/test_named_house.c	93	C	named menu choice routes like real mapped input	MERGE	weft/keys/regress; Proves a named action and its physical chord produce the same house-input intent.
+weft/native-source/controls/client-capacity/Makefile	17	make	build+check for PTY client capacity	MERGE	weft/pty/regress; Recipe folds into pty regress; needs -lutil and a fresh 0700 work dir; not wired into native-source check.
+weft/native-source/controls/client-capacity/test_client_capacity.c	227	C	real PTY manager capacity control	MERGE	weft/pty/regress; Proves wrm_clients refuses beyond the eight owned clients with real ksh/vi PTYs; uses a short real sleep.
+weft/native-source/controls/directional/Makefile	15	make	build+test for geometry focus	MERGE	weft/room/regress; Recipe folds into room regress; only 'test' target, not wired.
+weft/native-source/controls/directional/test_direction.c	243	C	geometric directional focus control	MERGE	weft/room/regress; Proves weft_direction half-plane/overlap/no-wrap selection and invalid-argument refusal; pure C.
+weft/native-source/controls/edge-api/OFFER.md	38	Markdown	offer note for the edge-API control	RETIRE	-; Delivery/offer packaging note; its one durable fact (reuses component/test_room.c fixture as 8x4 with 2x2 window) goes into a comment in the merged test.
+weft/native-source/controls/edge-api/build-edge-api.sh	65	sh	out-of-tree build script normal/ub	MERGE	weft/room/regress; Build-only wrapper superseded by a regress Makefile target; ub flags recipe folds there.
+weft/native-source/controls/edge-api/test_edge_api.c	252	C	room API edge controls (raw scalars, clamped no-op, offscreen)	MERGE	weft/room/regress; Proves invalid raw action scalars refuse and clamped edge no-ops stay fresh via real store CAS interceptor; depends on room-motion/component/test_room.c via #include.
+weft/native-source/controls/fairness-lag/vendor/plant_room_store.c	65	C	test fixture that seeds a tiny room store	PORT	weft/launch/regress/plant_room_store.c; Load-bearing: launcher Makefile builds plant_room_store from here and root-join/launcher run.sh use it.
+weft/native-source/controls/fairness-lag/wrm_io_maptest.c	69	C	map-test IO seam substituting WSKBDIO_GETMAP	PORT	weft/motion/regress/wrm_io_maptest.c; Load-bearing: launcher weft-room-motion-mapio (wired into native-source check) links it; only keymap ioctl substituted, reads stay real.
+weft/native-source/controls/focus-raise/Makefile	18	make	build+check focus raise painter	MERGE	weft/lib/regress; Recipe folds into lib regress; links whole libweft_motion_frame.a though only raster is exercised; not wired.
+weft/native-source/controls/focus-raise/test_focus_raise.c	494	C	desktop painter ordering pixel proofs	MERGE	weft/lib/regress; Proves wn_raster_desktop_cells raises focused window within band, strip/help last, clip reporting; positive pixel proofs plus oversize-clip case.
+weft/native-source/controls/garden-client/FINAL-HASHES.json	31	JSON	garden client final evidence hashes	DEFER	-; Garden acceptance evidence; stays in frozen src with the garden.
+weft/native-source/controls/garden-client/FINAL-PINS-AFTER.json	7	JSON	garden decoder pin record after run	DEFER	-; Garden acceptance evidence; stays with the garden.
+weft/native-source/controls/garden-client/FINAL-PINS-BEFORE.json	7	JSON	garden decoder pin record before run	DEFER	-; Garden acceptance evidence; stays with the garden.
+weft/native-source/controls/garden-client/Makefile	26	make	build+check garden worker client	DEFER	-; Garden only; also uses -Wl,--wrap fault injection (GNU ld idiom).
+weft/native-source/controls/garden-client/PLAN.md	13	Markdown	garden client work plan	DEFER	-; Garden-only plan and checkpoint log.
+weft/native-source/controls/garden-client/PROVISIONAL-HASHES.json	24	JSON	superseded provisional evidence hashes	RETIRE	-; Superseded by FINAL-HASHES.json (which itself defers with the garden).
+weft/native-source/controls/garden-client/RETURN-provisional.md	55	Markdown	superseded provisional return note	RETIRE	-; Superseded by RETURN.md; kept only in frozen src.
+weft/native-source/controls/garden-client/RETURN.md	52	Markdown	garden client final return note	DEFER	-; Garden acceptance record for wrm_garden.
+weft/native-source/controls/garden-client/hash_openbsd.c	15	C	SHA-256 wf_hash hook for garden tests	DEFER	-; Garden test hook; duplicates canonical wf_hash (libweft) so must not be ported as a second copy.
+weft/native-source/controls/garden-client/test_client.c	276	C	garden worker client lifecycle controls	DEFER	-; Garden only (wrm_garden); has real red cases (corrupt/stale/torn frames) but needs a Python worker.
+weft/native-source/controls/garden-client/test_faults.c	273	C	garden client syscall fault controls	DEFER	-; Garden only; -Wl,--wrap of fork/clock_gettime/read/write etc.
+weft/native-source/controls/garden-client/worker.py	91	Python	Python pipe peer for garden client	DEFER	-; Garden only; Python worker.
+weft/native-source/controls/garden-offer/Makefile	15	make	build+check garden offer parser	DEFER	-; Garden only.
+weft/native-source/controls/garden-offer/test_live.c	80	C	garden offer over real pipe worker	DEFER	-; Garden only; needs Python worker.
+weft/native-source/controls/garden-offer/test_offer.c	69	C	WGOFFER1 record parser controls	DEFER	-; Garden only (weft_garden_offer).
+weft/native-source/controls/garden-offer/worker.py	33	Python	Python offer sidecar worker	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/Makefile	23	make	build for help/actions/unmapped/client-view controls	MERGE	weft/keys/regress; Split: help/actions/unmapped input to keys, help frame to motion, client views to pty; 'test' runs only two of seven targets; not wired.
+weft/native-source/controls/help/README.md	30	Markdown	online help controls note and help limits	MERGE	weft/keys; Help limits (96 cols/28 rows/4096 bytes, unbound shown, small viewport refuses overlay) fold into the keys/help manual.
+weft/native-source/controls/help/events.c	25	C	wscons event fixture writer	MERGE	weft/motion/regress; Needed by the producer journeys once converted from Python to sh+C; pure C.
+weft/native-source/controls/help/garden_actions_worker.py	60	Python	synthetic garden station worker	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/garden_places_fault_worker.py	19	Python	garden furnishing fault injector	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/plant_focused_view.c	37	C	seeds a saved view into a fresh room store	MERGE	weft/views/regress; Fixture for the saved-view vi journey in test_producer.py; belongs with views (later step).
+weft/native-source/controls/help/test_actions_input.c	297	C	Actions surface input join hostile battery	MERGE	weft/keys/regress; Proves menu typing never reaches apps, held keys never become fresh typing, recovery preempts; real room/adapter, planted map.
+weft/native-source/controls/help/test_actions_producer.py	266	Python	Python Actions/reference/vi journey over real producer	MERGE	weft/motion/regress; Valuable full-producer journey but Python: must be rewritten in sh+C (events.c + frame decoder); uses wall-clock deadlines and sleeps.
+weft/native-source/controls/help/test_client_views.c	57	C	PTY and saved view claiming one pane	MERGE	weft/pty/regress; Proves wrm_clients refuses a second app on a pane, adds no competing layer, creates no editor file (red cases).
+weft/native-source/controls/help/test_garden_actions.py	266	Python	garden action dispatch journey	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/test_garden_producer.py	265	Python	garden world + producer journey	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/test_garden_station_journey.py	329	Python	garden station journey	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/test_garden_walk_actions.py	282	Python	garden walk-to-station vi journey	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/test_help_frame.c	239	C	help overlay in real encoded frame	MERGE	weft/motion/regress; Proves help is in the authenticated frame with source/store identity unchanged and pending-frame refusal; depends on wmf room (physics deferral caveat).
+weft/native-source/controls/help/test_help_input.c	225	C	help content and keyboard custody	MERGE	weft/keys/regress; Proves help modality, SAVE refusal under help, alias/repeat custody, recovery; takes keymap.conf path.
+weft/native-source/controls/help/test_places_visibility.py	46	Python	unrendered garden station publishes no action	DEFER	-; Garden only; Python.
+weft/native-source/controls/help/test_producer.py	205	Python	Python help journey over real producer	MERGE	weft/motion/regress; Help over the real producer with keymap ioctl substituted; Python must become sh+C; uses wall-clock deadlines/sleeps.
+weft/native-source/controls/help/test_unmapped_input.c	103	C	unsupported physical keys are not stream loss	MERGE	weft/room/regress; Proves the room adapter counts unsupported keys without mutating state or losing the stream.
+weft/native-source/controls/live/Makefile	36	make	build+check live stream/supervisor/launcher joins	MERGE	weft/launch/regress; Split across driver/motion/launch regress; uses -D symbol renames for seams; not wired.
+weft/native-source/controls/live/producer_probe.c	18	C	argv probe standing in for the producer	MERGE	weft/launch/regress; Helper for test_live_launcher proving exact argv handed to the producer.
+weft/native-source/controls/live/test_frame_io.c	210	C	presenter frame IO and report control	MERGE	weft/launch/regress; Exercises wmp_report and vendored weft_motion_present with an injected clock.
+weft/native-source/controls/live/test_live_launcher.c	130	C	real launcher fork/exec/reap	MERGE	weft/launch/regress; Proves launcher core execs the producer with exact argv and reaps it; marker presenter, no display.
+weft/native-source/controls/live/test_live_room.c	64	C	live room counter overflow refusal	MERGE	weft/motion/regress; Proves wmf prepare/complete/deliver refuse at counter exhaustion (WN_LIMIT) via planted seams; includes weft_motion_room.c.
+weft/native-source/controls/live/test_live_stream.c	151	C	live ctor/codec -> pipe -> mapped DRM fixture	MERGE	weft/driver/regress; End-to-end frame wire into the driver fixture; includes base-driver/tests/test_adapter.c.
+weft/native-source/controls/live/test_live_supervisor.c	56	C	supervisor under clock jump	MERGE	weft/driver/regress; Proves supervisor bounds with a +306s injected clock jump; includes base-driver/tests/test_quiescence.c.
+weft/native-source/controls/live/test_producer_grace.c	78	C	producer TERM grace reap	MERGE	weft/launch/regress; Proves ns_reap grace/TERM accounting on a real child.
+weft/native-source/controls/motion-direct/Makefile	32	make	build for direct-pair physics and frame tests	MERGE	weft/motion/regress; Only the frame-custody targets survive; check runs physics tests only and three targets are orphaned.
+weft/native-source/controls/motion-direct/README.md	42	Markdown	direct-pair broad-phase policy note	DEFER	-; Motion physics design note; physics waits on owner decision.
+weft/native-source/controls/motion-direct/motion_benchmark.c	23	C	physics benchmark	DEFER	-; Physics benchmark, wall-clock measurement; not a test.
+weft/native-source/controls/motion-direct/test_constructor_alloc.c	34	C	physics factory allocation fault control	DEFER	-; Physics engine (weft_world/spatial/bridge) allocation refusal; red cases but deferred with physics.
+weft/native-source/controls/motion-direct/test_desktop_custody.c	276	C	desktop painter config -> frame custody	MERGE	weft/motion/regress; Proves wmf_set_desktop changes reach the encoded frame with store witness; depends on wmf room (physics caveat).
+weft/native-source/controls/motion-direct/test_idle_skip.c	185	C	idle prepare skip and alloc failure	MERGE	weft/motion/regress; Proves unchanged cells skip work and calloc failure refuses; includes weft_motion_room.c, sloppy // hooks, not in check.
+weft/native-source/controls/motion-direct/test_motion_direct.c	107	C	direct-pair physics policy + 500ms ceiling	DEFER	-; Physics only; wall-clock 500ms ceiling is a clock dependency.
+weft/native-source/controls/motion-direct/test_tick_visible.c	163	C	tick visibility via public motion API	MERGE	weft/motion/regress; Proves wmf_tick_visible reports visible change correctly; depends on wmf room (physics caveat).
+weft/native-source/controls/native-pty/Makefile	34	make	build+check weft_pty	MERGE	weft/pty/regress; Recipe folds in; -Wl,--wrap is a GNU-ld idiom to replace; provenance-check pins a header hash.
+weft/native-source/controls/native-pty/fdcount.c	14	C	inherited-FD count witness	MERGE	weft/pty/regress; Helper for test_weft_pty FD hygiene case.
+weft/native-source/controls/native-pty/test_weft_pty.c	578	C	real shell/vi PTY lifecycle controls	MERGE	weft/pty/regress; Proves drain-on-stop, ECHILD honesty, FD hygiene, vi argv exactness, resize with real ksh/vi.
+weft/native-source/controls/native-pty/test_wpt_wrap.c	220	C	weft_pty hostile syscall wrap controls	MERGE	weft/pty/regress; Proves EINTR/readable-flood/fcntl-fail/clock-fail teardown safeguards (red cases); uses -Wl,--wrap which must become a seam.
+weft/native-source/controls/native-terminal/Makefile	18	make	build+check terminal and raster	MERGE	weft/pty/regress; Split: terminal tests to pty, raster tests to lib; test_raster_images not in check.
+weft/native-source/controls/native-terminal/test_author_r2.c	61	C	terminal parser overflow probes	MERGE	weft/pty/regress; Proves long CSI clamps without overflow; crude return-1 style, fold into test_boundaries.
+weft/native-source/controls/native-terminal/test_boundaries.c	79	C	terminal emulator boundary controls	MERGE	weft/pty/regress; Proves weft_terminal grid validity under hostile escape input.
+weft/native-source/controls/native-terminal/test_raster_cells.c	326	C	cell raster overlap/clip/cursor/envelope	MERGE	weft/lib/regress; Proves weft_raster cell clip and envelope plus encode/decode round trip.
+weft/native-source/controls/native-terminal/test_raster_images.c	115	C	image layer placement in authenticated frame	MERGE	weft/lib/regress; Proves raster layers through wmf frame; uses wmf room (physics caveat); not in check.
+weft/native-source/controls/robust-base/Makefile	59	make	build+check adversarial lifetime controls	MERGE	weft/launch/regress; Recipe folds in; rebuilds mapio and RAM launcher; not wired into native-source check.
+weft/native-source/controls/robust-base/README.md	79	Markdown	lifetime controls scope and measurements	MERGE	weft/launch; Scope and the noted fd-inheritance-across-exec observation fold into regress README/manual; measurements are evidence.
+weft/native-source/controls/robust-base/robust.h	181	C	pgrep/fstat/ps census helpers	MERGE	weft/launch/regress; Base-tool witnesses for strays/FD/RSS; no devices.
+weft/native-source/controls/robust-base/run.sh	14	sh	sh runner for four lifetime cases	MERGE	weft/launch/regress; Runner keeps fresh fixtures and evidence per case.
+weft/native-source/controls/robust-base/test_eof_cycles.c	142	C	five-session leak census	MERGE	weft/launch/regress; Proves flat FD/RSS and zero strays across EOF/recovery cycles; timing via sleeps.
+weft/native-source/controls/robust-base/test_exit_reopen.c	145	C	natural exit reap and pane reuse	MERGE	weft/launch/regress; Proves producer reaps natural shell/vi exits and FD balance per open/exit.
+weft/native-source/controls/robust-base/test_flood_focus.c	139	C	recovery under output flood + chord churn	MERGE	weft/launch/regress; Proves recovery reaps both children and restores display under load.
+weft/native-source/controls/robust-base/test_recovery_busy.c	120	C	recovery not starved by output	MERGE	weft/launch/regress; Proves bounded recovery latency and teardown drain accounting; latency is a wall-clock measure.
+weft/native-source/controls/room-motion-refusals/nonblock_exec.py	39	Python	Python launcher setting O_NONBLOCK fds	MERGE	weft/motion/regress; Python helper must become a tiny C exec helper; has a 30s wall-clock timeout.
+weft/native-source/controls/room-motion-refusals/run.sh	103	sh	named-refusal controls for the producer (wired)	MERGE	weft/motion/regress; Wired into check; seven explicit red rows (missing/wrong-type/unreadable store, font, client dir) require named refusal not signal; currently needs garden worker env, which must be dropped.
+weft/native-source/controls/root-join/Makefile	53	make	build for full launcher/producer/driver joins	MERGE	weft/launch/regress; Many orphan targets, no check target; not wired.
+weft/native-source/controls/root-join/delayed_producer.c	11	C	exec-skew producer wrapper	MERGE	weft/launch/regress; Fixture for test_deadline startup skew; real nanosleep.
+weft/native-source/controls/root-join/ram_launcher.c	484	C	RAM-fixture DRM launcher build	MERGE	weft/launch/regress; Shared fixture for root-join and robust-base; includes base-driver/wp_drm_adapter.c with device edges substituted.
+weft/native-source/controls/root-join/test_client_cap.c	41	C	client cap at finite frame boundary	MERGE	weft/launch/regress; Proves no fork-then-fail at the last finite frame.
+weft/native-source/controls/root-join/test_clients_join.c	184	C	real ksh/vi through full pipeline	MERGE	weft/launch/regress; Shared harness (included by six tests and robust-base); only GETMAP and DRM edges are fixtures.
+weft/native-source/controls/root-join/test_deadline.c	54	C	startup skew and TOTAL -> EOF	MERGE	weft/launch/regress; Proves source-time termination; depends on real-time sleeps.
+weft/native-source/controls/root-join/test_full_join.c	86	C	two full launcher->driver joins	MERGE	weft/launch/regress; Baseline full-join control.
+weft/native-source/controls/root-join/test_idle_join.c	107	C	full-HD idle work/wake/recovery	DEFER	- (supervised measurement, PLAN D6); Wall-clock latency measure: STANDARDS 6 bars clock-dependent checks, so it leaves regress and returns as one supervised measurement outside make check.
+weft/native-source/controls/root-join/test_input_counter.c	154	C	event burst near counter exhaustion	MERGE	weft/motion/regress; Proves producer refuses at input counter exhaustion; includes weft-room-motion.c with injected clock/poll/GETMAP.
+weft/native-source/controls/root-join/test_pane_runtime.c	201	C	joined pane/client/group control	MERGE	weft/launch/regress; Proves pane/client/group behaviour through the real joined path.
+weft/native-source/controls/root-join/test_quiet_producer.c	224	C	producer loop quiet/dirty custody	MERGE	weft/motion/regress; Proves completion records match decoded wire with injected clock/poll; includes weft-room-motion.c.
+weft/native-source/controls/root-join/test_responsiveness.c	97	C	input burst latency and recovery	DEFER	- (supervised measurement, PLAN D6); Wall-clock latency measure: STANDARDS 6 bars clock-dependent checks, so it leaves regress and returns as one supervised measurement outside make check.
+weft/native-source/controls/root-join/test_soak_eof.c	39	C	EOF owes deferred redraw a final frame	MERGE	weft/launch/regress; Proves orderly EOF still delivers the final frame.
+weft/native-source/controls/root-join/test_store_churn.c	61	C	over 1024 publications through full path	MERGE	weft/launch/regress; Proves store churn beyond history limits through keyboard/store/motion/DRM.
+weft/native-source/controls/root-join/test_undo.c	138	C	UNDO-before-HOME exit regression	MERGE	weft/launch/regress; Reproduces Hugh's UNDO failure and requires a real store-permission failure to still end the session (red case).
+weft/native-source/controls/root-join/test_viewport_join.c	143	C	HOME -> outward move viewport edges	MERGE	weft/launch/regress; Reproduces HOME/viewport-edge failure through the full join; room behaviour proven end to end.
+weft/native-source/controls/seed-session/run.sh	64	sh	seed_session pledge/unveil envelope green+red (wired)	MERGE	weft/seed/regress; Wired into check; explicit RED: unveilable store path must refuse at envelope arming.
+weft/native-source/controls/status/Makefile	7	make	build+check status collector	MERGE	weft/lib/regress; Recipe folds in; not wired.
+weft/native-source/controls/status/test_status.c	131	C	status collector unknown law and bounds	MERGE	weft/lib/regress; Proves weft_status shows -- for unknown and refuses invalid battery/AC and tiny buffers.
+weft/native-source/controls/store-budget/Makefile	7	make	build+test store budget	MERGE	weft/lib/regress; Recipe folds in; only 'test' target; not wired.
+weft/native-source/controls/store-budget/test_store_budget.c	122	C	store capacity/stale CAS/lock controls	MERGE	weft/lib/regress; Proves store capacity WN_LIMIT, stale CAS WN_MOVED, invalid budget and lock WN_BUSY refusals.
+weft/native-source/controls/stream/Makefile	17	make	build for stream/abandon/dirty joins	MERGE	weft/driver/regress; Recipe folds in; test_dirty orphaned; no check target.
+weft/native-source/controls/stream/test_abandon.c	280	C	unknown display child abandon (ECHILD)	MERGE	weft/driver/regress; Proves supervisor refuses with WP_SYSTEM and no forbidden teardown on injected ECHILD.
+weft/native-source/controls/stream/test_dirty.c	52	C	DIRTYFB must precede continuation ACK	MERGE	weft/driver/regress; Proves failed dirty notifications stay visible and ordering holds.
+weft/native-source/controls/stream/test_stream.c	156	C	frame stream joins + digest corruption	MERGE	weft/driver/regress; Proves recovery, frame-cap tail, digest corruption and pre-driver refusals (red cases).
+weft/native-source/controls/test_operator.py	98	Python	operator shell dispatch control	DEFER	-; Install/operator scripts need owner authority; Python with substituted device ops.
+weft/native-source/controls/test_operator_preflight.py	252	Python	operator preflight filesystem custody	DEFER	-; Install/operator; Python, needs doas and /var/weft, stats real /dev devices.
+weft/native-source/controls/touch/Makefile	19	make	build touch units	DEFER	-; Touch deferred.
+weft/native-source/controls/touch/run.sh	21	sh	touch build+journey runner	DEFER	-; Touch deferred; rebuilds product in place.
+weft/native-source/controls/touch/test_touch_producer.py	637	Python	touch journey over real producer	DEFER	-; Touch deferred; Python.
+weft/native-source/controls/touch/test_touch_units.c	600	C	touch source/chrome unit laws	DEFER	-; Touch deferred (weft_touch, weft_touch_chrome).
+weft/native-source/controls/touch/tevents.c	67	C	wscons touch event fixture writer	DEFER	-; Touch deferred.
+weft/native-source/controls/touch/vaio_touch_probe.c	110	C	read-only raw wsmouse device probe	DEFER	-; Touch deferred; opens a real device, not a test.
+weft/native-source/controls/weft-view/run.sh	50	sh	weft-view pledge/unveil envelope green+red (wired)	MERGE	weft/view/regress; Wired into check; explicit RED: unveilable store path must refuse at envelope arming with no output.
+weft/native-source/keymap.conf	67	config	default desktop key map	PORT	weft/keys/keymap.conf; Default map read at session start; single canonical copy.
+weft/native-source/launcher/Makefile	131	make	launcher + joined-test build	PORT	weft/launch/Makefile + regress/Makefile; Rewrite: drop -Wl,--wrap (use -D seams), drop mapio/garden/touch producer target and the broken provenance-check.
+weft/native-source/launcher/README.md	17	Markdown	launcher readme	MERGE	weft/launch (weft-launch manual); Usage and custody notes fold into the existing weft-launch manual.
+weft/native-source/launcher/launcher/test_early_cancel.c	0	C	zero-line stray duplicate	RETIRE	-; Empty file in a nested stray directory; real control is launcher/test_early_cancel.c.
+weft/native-source/launcher/ns_reap.c	287	C	producer PID-authority reaper	PORT	weft/launch; Load-bearing safeguard: bounded TERM/KILL, ECHILD ends authority, never waitpid(-1).
+weft/native-source/launcher/ns_reap.h	55	C	reaper interface	PORT	weft/launch; Interface and authority law for ns_reap.
+weft/native-source/launcher/run.sh	28	sh	evidence build/test harness	MERGE	weft/launch/regress/Makefile; Its duty (build, run test_reap/test_session) becomes regress targets; evidence capture and broken provenance-check step retire.
+weft/native-source/launcher/test_early_cancel.c	67	C	pre-exec cancellation witness	PORT	weft/launch/regress; Red control for TERM swallowed before exec; rework from -Wl,--wrap to -D seams.
+weft/native-source/launcher/test_reap.c	241	C	ns_reap unit tests (wrapped kill/waitpid/clock)	PORT	weft/launch/regress; Deterministic custody controls (ECHILD, EINTR storm, clock failure); rework --wrap to -D seams.
+weft/native-source/launcher/test_session.c	620	C	joined launcher lifetime tests	PORT	weft/launch/regress; Joined process/fd tests; must stop depending on mapio producer that links garden and touch sources.
+weft/native-source/launcher/vendor/weft_motion_present.c	368	C	in-process presenter over paced driver	PORT	weft/launch; The presenter (weft_motion_present) named in the plan; drop vendor/ layering.
+weft/native-source/launcher/vendor/weft_motion_present.h	79	C	presenter interface/receipt	PORT	weft/launch; Interface for presenter and wmp_receipt.
+weft/native-source/launcher/weft-native-session-core.c	518	C	launcher core (validate, fork/exec producer, present, reap)	PORT	weft/launch; Core of weft-launch; add pledge/unveil.
+weft/native-source/launcher/weft-native-session.c	10	C	thin main	PORT	weft/launch; Ten-line main; keeps core linkable by test stubs.
+weft/native-source/launcher/wmp_report.c	95	C	receipt log writer	PORT	weft/launch; Prints the numeric custody receipt the operator parses.
+weft/native-source/launcher/wmp_report.h	12	C	receipt writer interface	PORT	weft/launch; Interface for wmp_report.
+weft/native-source/launcher/wmp_stub_count.c	134	C	counting stand-in presenter	PORT	weft/launch/regress; Test stand-in presenter for joined tests.
+weft/native-source/launcher/wmp_stub_fail1.c	114	C	early-failure stand-in presenter	PORT	weft/launch/regress; Drives the presenter-failure cancel/reap path.
+weft/native-source/operator/operate.sh	393	sh	root operator: device chown, xenodm stop/start, su run	DEFER	- (install card, owner authority); Runs as root via doas: chowns /dev/dri/card0 and /dev/wskbd0, rcctl stop/start xenodm, su to a hard-coded user; needs owner authority and references missing custody.awk.
+weft/native-source/room-motion/ATTRIBUTION-HANDS-FIRST.md	8	Markdown	hands-first stopgap attribution note	RETIRE	-; Process/attribution note for a touch-era overlay already in weft-room-motion.c; no load-bearing content.
+weft/native-source/room-motion/Makefile	42	make	producer build (motion, engine, garden, views, clients)	PORT	weft/motion/Makefile; Rewrite trimmed: drop ENGINE, garden, touch, sess_state and heartbeat objects; keep producer, clients, frame wire and component-check fixture-reset logic.
+weft/native-source/room-motion/component/Makefile	32	make	room library and room tests build	PORT	weft/room/Makefile; Split into weft/room, weft/keys and weft/lib builds; keep the header dependency rule that prevents stale struct layouts.
+weft/native-source/room-motion/component/PANES.md	102	Markdown	pane/group command and close-gate contract	MERGE	weft/room manual; Contract prose (close gate DENIED/STALE/BUSY, 32-node scene cap, no process kill) belongs in the room mdoc manual.
+weft/native-source/room-motion/component/core/sewwm_commit.c	15	C	reduce-then-display plumbing	PORT	weft/room; Small reducer glue used by the room library.
+weft/native-source/room-motion/component/core/sewwm_display.h	35	C	display adapter table	PORT	weft/room; Portability header consumed by sewwm_commit and home adapter.
+weft/native-source/room-motion/component/core/sewwm_reduce.c	191	C	desktop policy reducer	PORT	weft/room; Pure clamped policy reducer the room and producer call (sewwm_state_init).
+weft/native-source/room-motion/component/core/sewwm_reduce.h	85	C	desktop policy reducer interface	PORT	weft/room; Interface for the kept reducer.
+weft/native-source/room-motion/component/core/weft_action.c	48	C	pure focus/move/resize scene reducer	PORT	weft/room; Pure action reducer with zero-on-refusal law.
+weft/native-source/room-motion/component/core/weft_action.h	12	C	action reducer interface	PORT	weft/room; Interface for weft_action.
+weft/native-source/room-motion/component/core/weft_focus.c	36	C	next/previous focus reducer	PORT	weft/room; Pure bounded focus stepping used by the room.
+weft/native-source/room-motion/component/core/weft_focus.h	14	C	focus reducer interface	PORT	weft/room; Interface for weft_focus.
+weft/native-source/room-motion/component/core/weft_home_adapter.c	172	C	HOME/undo geometry adapter	PORT	weft/room; Room HOME arrangement adapter over reducer and store.
+weft/native-source/room-motion/component/core/weft_home_adapter.h	69	C	HOME adapter interface	PORT	weft/room; Interface for weft_home_adapter.
+weft/native-source/room-motion/component/core/weft_home_session.c	80	C	one-observation HOME session	PORT	weft/room; Holds one observed generation per HOME attempt (CAS custody).
+weft/native-source/room-motion/component/core/weft_home_session.h	45	C	HOME session interface	PORT	weft/room; Interface for weft_home_session.
+weft/native-source/room-motion/component/core/weft_key_read.c	43	C	one bounded wscons read	PORT	weft/keys; Single injected read of one wscons_event; input boundary.
+weft/native-source/room-motion/component/core/weft_key_read.h	51	C	key read interface	PORT	weft/keys; Interface for weft_key_read.
+weft/native-source/room-motion/component/core/weft_raster.c	795	C	software raster of scene/cells/help	PORT	weft/lib; Canonical raster (deps/compare copy is a drifted 505-line duplicate).
+weft/native-source/room-motion/component/core/weft_raster.h	81	C	raster interface and limits	PORT	weft/lib; Canonical raster header with font/pixel/help bounds.
+weft/native-source/room-motion/component/core/weft_scene.c	361	C	bounded scene validate/encode	PORT	weft/lib; Canonical allocation-free scene organ (deps copy drifted).
+weft/native-source/room-motion/component/core/weft_scene.h	92	C	scene types and limits	PORT	weft/lib; WN_NODES_MAX and scene wire definitions.
+weft/native-source/room-motion/component/core/weft_scene_source.c	156	C	scene-source fixture over store	MERGE	weft/room/regress; Only linked into test-room FRAME set; test support for the room regress.
+weft/native-source/room-motion/component/core/weft_scene_source.h	79	C	scene-source fixture interface	MERGE	weft/room/regress; Interface for the test-only scene source.
+weft/native-source/room-motion/component/core/weft_store.h	52	C	store interface and bounds	PORT	weft/lib; Canonical store header (generations/objects caps).
+weft/native-source/room-motion/component/core/weft_store_openbsd.c	538	C	OpenBSD generation store with CAS	PORT	weft/lib; Canonical store; bounded reads, native SHA-256, publish-if CAS.
+weft/native-source/room-motion/component/core/wf_frame.c	135	C	WNFRAME1 encode/decode	PORT	weft/motion; Frame wire codec underneath the WNPOSE01 producer frame.
+weft/native-source/room-motion/component/core/wf_frame.h	53	C	frame wire bounds	PORT	weft/motion; WF_WIDTH_MAX/HEIGHT_MAX/WIRE_MAX limits used by parse and codec.
+weft/native-source/room-motion/component/core/wf_hash_openbsd.c	15	C	sha256 helper	PORT	weft/lib; The wf_hash helper (OpenBSD sha2).
+weft/native-source/room-motion/component/core/wf_stream_openbsd.c	95	C	frame stream transport reader	PORT	weft/motion; Native frame stream transport used by the room frame controls.
+weft/native-source/room-motion/component/core/wf_writer.c	118	C	bounded nonblocking frame writer	PORT	weft/motion; Deadline-bounded writer that the producer drives each frame.
+weft/native-source/room-motion/component/core/wf_writer.h	107	C	frame writer contract	PORT	weft/motion; Writer state machine contract (deadline, sticky errno, cancel).
+weft/native-source/room-motion/component/frame_support.h	62	C	frame/pipe/decoder test helpers	MERGE	weft/room/regress; Test fixture helpers; cited FRAME-HELPER-ORIGIN.json is absent.
+weft/native-source/room-motion/component/layout_controls.h	234	C	HOME/workarea room controls	MERGE	weft/room/regress; Real room/store controls included by test_room.c.
+weft/native-source/room-motion/component/mother/sess_state.c	374	C	session-state envelope journal (Mother)	DEFER	-; Serves only the Garden worker heartbeat.
+weft/native-source/room-motion/component/mother/sess_state.h	76	C	session-state envelope interface	DEFER	-; Serves only the Garden worker heartbeat.
+weft/native-source/room-motion/component/pane_controls.h	278	C	pane create/close/group controls	MERGE	weft/room/regress; Controls for the pane close gate and group moves.
+weft/native-source/room-motion/component/profile/weft_bindings.c	205	C	named desktop command map loader	PORT	weft/keys; keymap.conf loader; refuses with line number.
+weft/native-source/room-motion/component/profile/weft_bindings.h	64	C	bindings interface	PORT	weft/keys; Interface for bindings; drop garden/workbench commands when trimmed.
+weft/native-source/room-motion/component/profile/weft_catalogue.c	176	C	action catalogue for menu	PORT	weft/keys; Named action labels for the menu.
+weft/native-source/room-motion/component/profile/weft_catalogue.h	53	C	catalogue interface	PORT	weft/keys; Interface for catalogue.
+weft/native-source/room-motion/component/profile/weft_help.c	158	C	bounded help text from keymap	PORT	weft/keys; Help generated from the admitted map, bounded to WHLP_BYTES.
+weft/native-source/room-motion/component/profile/weft_help.h	12	C	help interface	PORT	weft/keys; Interface for help.
+weft/native-source/room-motion/component/profile/weft_house_input.c	198	C	desktop intent profile	PORT	weft/keys; Maps keyboard intents to house kinds (whi_desktop).
+weft/native-source/room-motion/component/profile/weft_house_input.h	55	C	house input interface	PORT	weft/keys; Interface; trim WHI_GARDEN and workbench kinds.
+weft/native-source/room-motion/component/profile/weft_key.c	474	C	pure keyboard-intent organ	PORT	weft/keys; Pure, allocation-free key edge to intent organ.
+weft/native-source/room-motion/component/profile/weft_key.h	242	C	keyboard-intent interface	PORT	weft/keys; Interface for weft_key.
+weft/native-source/room-motion/component/profile/weft_menu.c	151	C	pure menu state	PORT	weft/keys; Menu state over the catalogue; choosing is not executing.
+weft/native-source/room-motion/component/profile/weft_menu.h	27	C	menu interface	PORT	weft/keys; Interface for menu.
+weft/native-source/room-motion/component/profile/weft_text.c	130	C	key event to terminal bytes	PORT	weft/keys; Press-plane text decode for terminal clients.
+weft/native-source/room-motion/component/profile/weft_text.h	63	C	text decode interface	PORT	weft/keys; Interface for text decode.
+weft/native-source/room-motion/component/profile/weft_wskbd.c	313	C	wscons keyboard adapter	PORT	weft/keys; Device event to logical key adapter; no open(2).
+weft/native-source/room-motion/component/profile/weft_wskbd.h	227	C	wskbd adapter interface	PORT	weft/keys; Interface for wskbd adapter.
+weft/native-source/room-motion/component/run-native.sh	23	sh	OpenBSD evidence runner for test-room	MERGE	weft/room/regress; Runner duty folds into regress Makefile; its ubtrap mode uses -Wl,--no-execute-only and writes evidence/ in cwd.
+weft/native-source/room-motion/component/test_client_route.c	484	C	deviceless client text routing controls	MERGE	weft/room/regress; C controls for text-plane routing; keep as room/keys regress.
+weft/native-source/room-motion/component/test_panes.c	272	C	pane/group schema controls	MERGE	weft/room/regress; Allocation-free pane controls, OpenBSD-only.
+weft/native-source/room-motion/component/test_room.c	374	C	wscons to room to store to frame controls	MERGE	weft/room/regress; Main room regress; uses clock_gettime which the standard forbids in tests.
+weft/native-source/room-motion/component/weft_direction.c	109	C	directional focus	PORT	weft/room; Pure directional focus over admitted windows.
+weft/native-source/room-motion/component/weft_direction.h	29	C	direction interface	PORT	weft/room; Interface for direction.
+weft/native-source/room-motion/component/weft_panes.c	308	C	pane lifecycle and groups	PORT	weft/room; Pane create/close gate and group moves; close never kills a process.
+weft/native-source/room-motion/component/weft_panes.h	58	C	panes interface	PORT	weft/room; Interface for panes.
+weft/native-source/room-motion/component/weft_room.c	721	C	room coordinator over keys/HOME/store	PORT	weft/room; Core room reducer/coordinator (wrc_*); trim garden/workbench intents.
+weft/native-source/room-motion/component/weft_room.h	168	C	room interface	PORT	weft/room; Interface for room.
+weft/native-source/room-motion/component/weft_room_layout.c	101	C	workarea/tidy layout plan	PORT	weft/room; Pure layout plan; cited CONTRACT.md is absent.
+weft/native-source/room-motion/component/weft_room_layout.h	22	C	layout interface	PORT	weft/room; Interface for layout.
+weft/native-source/room-motion/component/weft_room_receipt.c	85	C	bounded room receipt formatting	PORT	weft/room; Receipt text formatter used by producer and tests.
+weft/native-source/room-motion/component/weft_room_receipt.h	15	C	receipt interface	PORT	weft/room; Interface for receipt.
+weft/native-source/room-motion/component/weft_touch.c	240	C	wsmouse touchscreen source	DEFER	-; Touch is deferred.
+weft/native-source/room-motion/component/weft_touch.h	79	C	touch source interface	DEFER	-; Touch is deferred.
+weft/native-source/room-motion/component/weft_touch_chrome.c	563	C	finger chrome geometry/paint	DEFER	-; Touch is deferred (also linked into the motion frame library, must be unhooked).
+weft/native-source/room-motion/component/weft_touch_chrome.h	167	C	finger chrome interface	DEFER	-; Touch is deferred; weft_motion_frame.h includes it and must stop.
+weft/native-source/room-motion/component/weft_worker_heartbeat.c	118	C	garden worker heartbeat record	DEFER	-; Serves only the Garden worker.
+weft/native-source/room-motion/component/weft_worker_heartbeat.h	51	C	worker heartbeat interface	DEFER	-; Serves only the Garden worker.
+weft/native-source/room-motion/engine/weft_body.c	66	C	physics agent body	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_body.h	46	C	physics body interface	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_bridge.c	375	C	SEWWM adapter over physics world	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_bridge.h	91	C	physics bridge interface	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_clock.c	42	C	fixed-step physics clock	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_display.h	40	C	engine-era display backend shape	DEFER	-; Physics-era header; not used by the static producer.
+weft/native-source/room-motion/engine/weft_iron.h	158	C	physics engine API and limits	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_iron_abi.h	58	C	physics ABI	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_math.c	41	C	vector math	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_narrow.c	176	C	narrow-phase collision	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_spatial.c	213	C	spatial hash broad phase	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/engine/weft_world.c	404	C	physics world step	DEFER	-; Window-motion physics engine.
+weft/native-source/room-motion/garden_keys.c	56	C	keypress to garden command	DEFER	-; Garden.
+weft/native-source/room-motion/garden_keys.h	41	C	garden key table	DEFER	-; Garden.
+weft/native-source/room-motion/weft-room-motion.c	3317	C	producer main loop (store, input, clients, frames)	PORT	weft/motion; The producer; port the ~1.9k-line core and drop touch, garden, heartbeat and engine ticks.
+weft/native-source/room-motion/weft_garden_frame.c	123	C	garden worker frame decode	DEFER	-; Garden.
+weft/native-source/room-motion/weft_garden_frame.h	29	C	garden frame bounds	DEFER	-; Garden.
+weft/native-source/room-motion/weft_garden_offer.c	112	C	garden typed-action offer parser	DEFER	-; Garden.
+weft/native-source/room-motion/weft_garden_offer.h	28	C	garden offer interface	DEFER	-; Garden.
+weft/native-source/room-motion/weft_motion_codec.c	317	C	WNPOSE01 encode/decode/pump	PORT	weft/motion; The producer frame codec the presenter consumes.
+weft/native-source/room-motion/weft_motion_frame.h	124	C	WNPOSE01 frame and motion-room API	PORT	weft/motion; Trim: drop wmf_set_touch and the wrb_view pose dependency if static.
+weft/native-source/room-motion/weft_motion_room.c	678	C	frame custody plus physics posing	PORT	weft/motion (frame custody split; physics posing DEFER); About 500 of 678 lines are frame custody the producer needs (scene witness vs receipt, frame state machine, prepare bounds, complete/abort); only the pose-from-physics path waits with the engine.
+weft/native-source/room-motion/weft_pane.c	891	C	saved-view pane	PORT	weft/views; Saved-view pane module for the later views step.
+weft/native-source/room-motion/weft_pane.h	157	C	saved-view pane interface	PORT	weft/views; Interface for weft_pane.
+weft/native-source/room-motion/weft_room_bridge.c	233	C	scene to physics bridge projection	DEFER	-; Physics bridge; static posing at target needs none of it.
+weft/native-source/room-motion/weft_room_bridge.h	26	C	pose/view types for bridge	DEFER	-; Physics bridge types; static path can reduce wrb_view to identity.
+weft/native-source/room-motion/weft_room_motion_handoff.c	103	C	room to motion readback with receipt pinning	PORT	weft/motion; Room-to-motion readback gates (room pending, motion state, expected receipt) are not physics and the static producer needs them.
+weft/native-source/room-motion/weft_room_motion_handoff.h	19	C	handoff interface	PORT	weft/motion; Room-to-motion readback gates (room pending, motion state, expected receipt) are not physics and the static producer needs them.
+weft/native-source/room-motion/weft_room_views.c	384	C	saved-view pane registry	PORT	weft/views; Views registry for the later views step.
+weft/native-source/room-motion/weft_room_views.h	65	C	views registry interface	PORT	weft/views; Interface for weft_room_views.
+weft/native-source/room-motion/weft_workbench_pane.py	187	Python	Python workbench pane driver	DEFER	-; Python worker for the workbench/garden era; would need a written reason or C rewrite.
+weft/native-source/room-motion/wrm_clients.c	315	C	native PTY terminal clients (max 8)	PORT	weft/pty; Terminal pane clients; refuses root and relative client dir.
+weft/native-source/room-motion/wrm_clients.h	41	C	clients interface	PORT	weft/pty; Interface for clients.
+weft/native-source/room-motion/wrm_garden.c	680	C	garden worker child client	DEFER	-; Garden (fork/execv child, bounded pipes).
+weft/native-source/room-motion/wrm_garden.h	54	C	garden client interface	DEFER	-; Garden.
+weft/native-source/room-motion/wrm_io.c	20	C	injected read/ioctl shims	PORT	weft/motion; Tiny io shim for the keyboard map/read boundary.
+weft/native-source/room-motion/wrm_io.h	7	C	io shim interface	PORT	weft/motion; Interface for io shim.
+weft/native-source/room-motion/wrm_parse.c	77	C	strict CLI operand parser	PORT	weft/motion; Strict decimal parsing with bounds; geometry wire check.
+weft/native-source/room-motion/wrm_parse.h	23	C	parser interface	PORT	weft/motion; Interface for parser.
+weft/native-source/seed_session.1	249	mdoc	seed_session manual	PORT	weft/seed; Existing mdoc manual; drop garden style text.
+weft/native-source/seed_session.c	196	C	session store seeder	PORT	weft/seed; seed-session(1) with unveil/pledge; trim garden style branch (deferred).
+weft/native-source/status/weft_status.c	229	C	sysctl/apm resource sampler	PORT	weft/lib (weft_status); Status line sampler; only copy in tree.
+weft/native-source/status/weft_status.h	37	C	status interface	PORT	weft/lib (weft_status); Interface for weft_status.
+weft/native-source/terminal/README.md	131	Markdown	native clients/pty ownership prose	MERGE	weft/pty (manual); Ownership and bounds prose becomes the pty manual; wrm_clients/text parts go to their components.
+weft/native-source/terminal/weft_pty.c	421	C	PTY child spawn/drain/reap	PORT	weft/pty; forkpty child custody with HUP/TERM/KILL escalation; drop WPT_WORKBENCH python worker path (garden).
+weft/native-source/terminal/weft_pty.h	41	C	PTY interface	PORT	weft/pty; Interface; remove WPT_WORKBENCH.
+weft/native-source/terminal/weft_terminal.c	545	C	bounded VT cell grid	PORT	weft/pty; Pure bounded terminal emulator grid.
+weft/native-source/terminal/weft_terminal.h	39	C	terminal grid interface	PORT	weft/pty; Interface for weft_terminal.
+weft/native-source/weft_view.c	118	C	headless store->PPM renderer main	PORT	weft/view; weft-view(1) main with unveil+pledge.
+weft/run-desktop-check.sh	14	sh	garden fast-worker desktop check	DEFER	-; Builds native-source then runs a Python garden producer check; garden waits.
+weft/run-garden-desktop-check.sh	13	sh	garden walk desktop check	DEFER	-; Garden walk/vi/return fixture via Python; garden waits.
+weft/run-garden-station-checks.sh	15	sh	garden station checks	DEFER	-; Four garden station journeys via Python; garden waits.
+weft/tests/run.sh	54	sh	weft tree check	MERGE	weft/ (component regress); Leg 1 (native-source all+check under MALLOC_OPTIONS=S) folds into component regress; legs 2-3 (garden walk, weft3d suite) stay deferred with the garden.
+weft/weft-launch.1	267	mdoc	weft-launch(1) manual	PORT	weft/launch; mdoc manual for the launcher; trim the one garden mention.
+weft/weft-room-motion.1	256	mdoc	weft-room-motion(1) manual	PORT	weft/motion; mdoc manual for the producer; garden passages (15 mentions) trimmed or marked deferred.
+weft/weft-view.1	399	mdoc	weft-view(1) manual	PORT	weft/view; mdoc manual for the headless store renderer; no garden content.
+weft/weft.7	249	mdoc	weft(7) overview manual	PORT	weft/ (kit overview); mdoc overview of components, seams and planes; no garden content.
+weft/weft3d.1	425	mdoc	weft3d(1) engine manual	DEFER	-; Manual for the Python weft3d engine CLI; garden waits.
+weft/worker/PINS-sha256.txt	375	text	origin-copy pin inventory	DEFER	-; 373-entry sha256 inventory of the pinned engine snapshot (origin-copy holds 214 of them); garden custody record.
+weft/worker/cache/manifest.json	49	JSON	painted-asset cache manifest	DEFER	-; Manifest for painted_cache decode cache; garden waits.
+weft/worker/garden_book.py	442	Python	garden book mode	DEFER	-; Garden-only book mode (imports reader, converse); hard-codes /home/elsewhere/publish path.
+weft/worker/garden_converse.py	453	Python	realm/letter surface over broker	DEFER	-; Garden-only; connects to a local AF_UNIX broker socket (WEFT_BROKER_SOCK) via vendored smclient.
+weft/worker/garden_desktop_entry.py	310	Python	garden desktop entry with sha256 custody	DEFER	-; Entry pinning worker files and the r5 .so by literal digest before ctypes load; the custody law should survive if the garden returns.
+weft/worker/garden_desktop_worker.py	855	Python	WGISOM01 desktop garden worker	DEFER	-; Garden worker over weft3d/molly; garden waits.
+weft/worker/garden_fast_worker.py	270	Python	WGFST01 fast-worker entry	DEFER	-; Earlier custody entry used by run-desktop-check.sh; garden waits.
+weft/worker/garden_navigation.py	136	Python	camera-relative walking	DEFER	-; Garden navigation; garden waits.
+weft/worker/garden_persist.py	135	Python	garden bookmark persistence hook	DEFER	-; Garden persistence; garden waits.
+weft/worker/garden_places.py	482	Python	garden stations scene hook	DEFER	-; Garden stations; garden waits.
+weft/worker/garden_raster.py	474	Python	ctypes adapter to libweft_garden_raster.so	DEFER	-; Loads the excluded r5 .so by absolute path via ctypes.CDLL; garden waits.
+weft/worker/garden_raster_b1.py	760	Python	ctypes batch adapter candidate	DEFER	-; Raster2 batch candidate loading libweft_garden_raster2.so via ctypes; garden waits.
+weft/worker/garden_realm.py	123	Python	seat realm/letter door	DEFER	-; Garden-only realm reader; garden waits.
+weft/worker/garden_style.py	134	Python	garden presentation layer	DEFER	-; Garden presentation over weft3d.vec; garden waits.
+weft/worker/garden_vignette.py	143	Python	native vignette shadow (ctypes)	DEFER	-; Loads raster2 .so via ctypes.CDLL; garden waits.
+weft/worker/garden_worker.py	434	Python	frozen accepted garden worker	DEFER	-; Predecessor WGISOM01 worker; garden waits.
+weft/worker/join_worker.py	74	Python	raster2 join wrapper	DEFER	-; Experiment harness choosing serial vs raster2 .so; garden waits.
+weft/worker/libweft_garden_raster2.so.sidecar.md	17	Markdown	raster2 .so provenance sidecar	DEFER	-; Pins excluded binary 1d4dddf1 with no build rule; garden waits.
+weft/worker/native/libweft_garden_raster.so.sidecar.md	17	Markdown	r5 .so provenance sidecar	DEFER	-; Pins excluded binary with no build rule and no source in tree; garden waits.
+weft/worker/origin-copy/README.md	154	Markdown	molly game project README	DEFER	-; Provenance/description of the molly garden game; garden waits.
+weft/worker/origin-copy/molly/__init__.py	2	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/bake_tunnels_gallery.py	104	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/blur.py	48	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/bones.py	52	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/boxer.py	44	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/braille.py	245	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/character_cast.py	144	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/deep.py	115	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/deep_render.py	330	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/deep_walk.py	133	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/dig.py	256	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/engine.py	428	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/findings.py	64	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/font.py	107	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/ghost_mist.py	53	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/health.py	128	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/hires.py	236	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/labels.py	36	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/library.py	574	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/music_record.py	129	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/music_sigil.py	223	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/policy.py	181	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/porpoise.py	42	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/preview.py	947	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/probe_state.py	151	Python	live fleet reachability probe	RETIRE	-; Runs tailscale status via subprocess and probes TCP ports; foreign host probe not reached by any worker.
+weft/worker/origin-copy/molly/record.py	51	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/sprites.py	445	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/storyboard_rat_loom.py	147	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/tunnel_render.py	397	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/tunnel_sprites.py	217	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/tunnel_views.py	181	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/tunnels.py	324	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/ui.py	355	Python	molly side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/molly/weft.py	549	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/molly/world.py	358	Python	molly game module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/ARCHITECTURE.md	91	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/README.md	212	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/ROADMAP.md	162	Markdown	engine roadmap	RETIRE	-; Superseded agent roadmap; no product duty.
+weft/worker/origin-copy/weft3d/TOUCHSTONE-FOR-GEMINI.md	398	Markdown	agent correspondence brief	RETIRE	-; Correspondence/audit brief, not engine contract.
+weft/worker/origin-copy/weft3d/__init__.py	49	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/__main__.py	1546	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/acceptance.py	2088	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/acoustic_tectonics.py	259	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/angle_pipe_custody.py	215	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/anim.py	50	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/apoptosis.py	269	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/app.py	221	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/archives/PROVENANCE.md	28	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/archives/__init__.py	10	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/archives/game_v1.py	340	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/assets.py	292	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/audio_cues.py	76	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/audio_mixer.py	222	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/batch.py	103	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/billboard.py	849	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/bounds.py	55	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/c_shim/weft3d_shim.c	138	C	C fallback raster for weft3d	DEFER	-; Optional C raster loaded by native_bind via ctypes if built; no Makefile in tree; garden waits.
+weft/worker/origin-copy/weft3d/c_shim/weft3d_shim.h	40	C	C fallback raster ABI	DEFER	-; Header for the optional C shim; garden waits.
+weft/worker/origin-copy/weft3d/camera_control.py	221	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/camera_shots.py	664	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/chorum.py	166	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/clouds.py	33	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/clutch_quorum.py	231	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/co_regulation.py	86	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/colour.py	192	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/config.py	454	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/contacts.py	37	Python	weft3d side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/weft3d/corpus_tails.py	122	Python	weft3d side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/weft3d/craft.py	442	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/craft_system.py	268	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/crypto_fog.py	473	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/culling.py	40	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/debug.py	51	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/debug_draw.py	61	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/divergence_select.py	370	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/docs/ART-DIRECTION.md	137	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/docs/ENGINE-ARCHITECTURE.md	263	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/docs/FIDELITY-ROADMAP.md	230	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/docs/SHADOW-MAPS.md	154	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/docs/SOMATIC-PHYSICS.md	127	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/docs/TERMINAL-GLASS.md	56	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/docs/reference/stable-shadows.png.receipt.json	262	JSON	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/docs/reference/stable-shadows.png.sidecar.md	17	Markdown	weft3d design/reference doc	DEFER	-; Engine design reference for the deferred garden.
+weft/worker/origin-copy/weft3d/echo_memory.py	82	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/ecs.py	109	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/elsh.py	195	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/engraving.py	420	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/events.py	84	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/game.py	7	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/gltf.py	653	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/health_bridge.py	119	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/heightfield.py	204	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/house_pulse.py	256	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/hud.py	298	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/inhabit.py	1455	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/input.py	124	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/input_frame.py	212	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/input_remap.py	65	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/jobs.py	181	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/lens_obsidian.py	223	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/lenses.py	319	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/live/__init__.py	126	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/live/delta.py	88	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/live/frame.py	749	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/live/params.py	91	Python	live parametric geometry	RETIRE	-; No static import from workers, suite or CLI (ast closure); frozen src keeps the bytes.
+weft/worker/origin-copy/weft3d/live/server.py	977	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/live/test_params.py	62	Python	live params test (Python)	RETIRE	-; Tests an unreached module; not part of the discovered weft3d/tests suite.
+weft/worker/origin-copy/weft3d/local_folklore.py	217	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/lod.py	29	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/loop.py	82	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/love_gallery.py	216	Python	gallery bake	DEFER	-; Reached from weft3d CLI via __import__; garden engine waits.
+weft/worker/origin-copy/weft3d/lumen_edges.py	116	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/masterpiece.py	178	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/materials.py	64	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/memory_soa.py	228	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/mesh.py	754	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/mesh_cache.py	35	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/mist.py	140	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/mud_camera.py	238	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/mythos_parser.py	235	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/narrative_mass.py	136	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/native/Cargo.lock	7	Cargo	Rust hot-path lockfile	RETIRE	-; Foreign toolchain (cargo); optional accel never built in tree, native_bind tolerates absence.
+weft/worker/origin-copy/weft3d/native/Cargo.toml	21	Cargo	Rust hot-path manifest	RETIRE	-; Foreign toolchain (cargo); optional accel never built in tree.
+weft/worker/origin-copy/weft3d/native/README.md	24	Markdown	Rust hot-path README	RETIRE	-; Foreign toolchain notes; optional accel never built in tree.
+weft/worker/origin-copy/weft3d/native/src/lib.rs	302	Rust	Rust triangle fill	RETIRE	-; Foreign language/toolchain; optional, never built, garden uses its own C raster.
+weft/worker/origin-copy/weft3d/native_bind.py	369	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/open_world.py	104	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/painted/README	9	text	painted asset sidecar/README	DEFER	-; Describes painted PNG assets consumed by the garden cache; garden waits.
+weft/worker/origin-copy/weft3d/painted/duck.png.sidecar.md	17	Markdown	painted asset sidecar/README	DEFER	-; Describes painted PNG assets consumed by the garden cache; garden waits.
+weft/worker/origin-copy/weft3d/painted/kitchen.png.sidecar.md	17	Markdown	painted asset sidecar/README	DEFER	-; Describes painted PNG assets consumed by the garden cache; garden waits.
+weft/worker/origin-copy/weft3d/painted/molly.png.sidecar.md	17	Markdown	painted asset sidecar/README	DEFER	-; Describes painted PNG assets consumed by the garden cache; garden waits.
+weft/worker/origin-copy/weft3d/particles.py	106	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/pbr.py	264	Python	PBR reference materials	DEFER	-; Run by weft3d acceptance via python -m; garden engine waits.
+weft/worker/origin-copy/weft3d/physics.py	1085	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/picking.py	67	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/play.py	143	Python	GARDEN3D play loop	DEFER	-; Reached from weft3d CLI (__main__); garden engine waits.
+weft/worker/origin-copy/weft3d/play_lenses.py	141	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/play_world.py	150	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/png_sprite.py	403	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/portal_membrane.py	134	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/post.py	396	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/prefab.py	86	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/quality.py	192	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/query.py	51	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/raster.py	1038	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/raster_tiled.py	173	Python	weft3d side module	RETIRE	-; No static import from workers, weft3d suite or CLI (ast closure); demo/side scene; frozen src keeps the bytes.
+weft/worker/origin-copy/weft3d/registers.py	178	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/relational_gravity.py	342	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/render_graph.py	260	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/resolution_decay.py	190	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/resonance.py	58	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/resources.py	173	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/save.py	1209	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/scene.py	1128	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/scent_trail.py	81	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/screen_space.py	115	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/sdf_tunnels.py	156	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/shadows.py	1677	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/sixel.py	211	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/somatic_physics.py	706	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/somatic_weather.py	202	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/state.py	1179	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/story.py	92	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/subaquatic.py	133	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/systems.py	734	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/termglass.py	415	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/tests/__init__.py	4275	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_acceptance_contract.py	989	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_config_validation_contract.py	438	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_crypto_fog_gitless_contract.py	592	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_divergence_select_regression.py	54	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_game_compat_contract.py	151	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_gltf_admission_contract.py	244	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_input.py	599	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_live_rate_receipt.py	219	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_live_recovery_contract.py	527	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_live_v02_adversarial_correction.py	239	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_live_visual_contract.py	278	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_math_admission_contract.py	422	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_named_camera_contract.py	607	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_native_privacy_contract.py	805	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_obj_registry_admission_contract.py	387	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_physics_admission_contract.py	564	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_png_sprite.py	191	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_png_stream_contract.py	614	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_presentation_privacy_contract.py	1156	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_render_purity_contract.py	397	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_retained_sprite_contract.py	1033	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_save_contract.py	740	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_seed17_look_walk_contract.py	165	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_semantic_lens_contract.py	691	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_shadows.py	1211	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_state_integrity_contract.py	1265	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/tests/test_terminal_glass_contract.py	523	Python	weft3d suite test (Python)	DEFER	-; Part of the weft3d unittest suite run by weft/tests/run.sh leg 3; garden waits (Python tests would need C/sh if ever kept).
+weft/worker/origin-copy/weft3d/timebase.py	54	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/tipped_turtle.py	243	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/tombstone.py	190	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/tools_crafted/__init__.py	1	Python	crafted tool script (generated)	RETIRE	-; Generated at runtime by craft_system.py into the source tree; not authored engine code.
+weft/worker/origin-copy/weft3d/tools_crafted/bone_whistle.py	12	Python	crafted tool script (generated)	RETIRE	-; Generated at runtime by craft_system.py into the source tree; not authored engine code.
+weft/worker/origin-copy/weft3d/tools_crafted/braille_scope.py	18	Python	crafted tool script (generated)	RETIRE	-; Generated at runtime by craft_system.py into the source tree; not authored engine code.
+weft/worker/origin-copy/weft3d/tools_crafted/scope_echo.txt	10	text	braille scope sample output	RETIRE	-; Sample output text; no duty.
+weft/worker/origin-copy/weft3d/transform.py	39	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/upper_room.py	151	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/vec.py	364	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/weather.py	64	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/weft3d.config.json	30	JSON	engine default config	DEFER	-; Engine configuration read by weft3d; garden waits.
+weft/worker/origin-copy/weft3d/weft_thread.py	77	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/witness_prism.py	100	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/witness_weave.py	1029	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/world.py	1430	Python	weft3d engine module	DEFER	-; In the static import closure of garden_desktop_worker.py; garden waits.
+weft/worker/origin-copy/weft3d/z_peel.py	280	Python	weft3d engine module	DEFER	-; Reached by the weft3d suite or CLI imports, not by the desktop worker; garden waits.
+weft/worker/origin-copy/weft3d/zig_brainstem/README.md	75	Markdown	Zig brainstem idea	RETIRE	-; Research note with no code.
+weft/worker/origin-copy/weft3d/zig_stub/README.md	15	Markdown	Zig stub note	RETIRE	-; Research note with no code.
+weft/worker/painted_cache.py	231	Python	painted-asset decode cache	DEFER	-; Garden-only cache; garden waits.
+weft/worker/reader/font.816	0	binary font	duplicate 8x16 font	MERGE	weft/view; Byte-identical (sha256 954ce847) to weft/font.816; one canonical copy.
+weft/worker/reader/font.816.sidecar.md	17	Markdown	duplicate font sidecar	MERGE	weft/view; Sidecar for the duplicate font; folds into the canonical font record.
+weft/worker/reader/identities.json	88	JSON	library seat identities data	DEFER	-; Library reader data inside the garden process; garden waits.
+weft/worker/reader/labels.json	86	JSON	library label data	DEFER	-; Library reader data; garden waits.
+weft/worker/reader/library_catalog.py	98	Python	library book catalogue	DEFER	-; Reader is used only by garden_book and its own WGISOM01 worker; nothing outside the garden imports it.
+weft/worker/reader/library_paint.py	659	Python	illustrated book raster	DEFER	-; Garden-only reader raster (stdlib PNG decode); garden waits.
+weft/worker/reader/library_reader.py	144	Python	reader state machine	DEFER	-; Garden-only reader; garden waits.
+weft/worker/reader/library_session.py	163	Python	reader staging adapter in garden	DEFER	-; Garden-only adapter; garden waits.
+weft/worker/reader/library_shelves.py	356	Python	house shelves loader	DEFER	-; Garden-only reader input; garden waits.
+weft/worker/reader/library_worker.py	439	Python	WGISOM01 library reader worker	DEFER	-; Standalone reader worker, but no native-source or kit component spawns it; garden waits.
+weft/worker/reader/zine_manifest.py	423	Python	zine book loader	DEFER	-; Garden-only reader input; garden waits.
+weft/worker/vendor/raskah-client/smclient.py	218	Python	house broker client (AF_UNIX)	DEFER	-; Vendored broker client opening a Unix socket; used only by garden_converse.
+weft/worker/weft_garden_raster2.join-index.c	628	C	garden triangle raster C (raster2)	DEFER	-; Only C source for the garden raster ABI1 kernel plus batch/pthread bands/vignette; header weft_garden_raster2.h missing and no build rule.
