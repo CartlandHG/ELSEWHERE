@@ -1,0 +1,414 @@
+.Dd October 13, 2026
+.Dt GATES 7
+.Os ELSEWHERE
+.Sh NAME
+.Nm gates ,
+.Nm foreign-lint ,
+.Nm mk-lint ,
+.Nm banned-lint ,
+.Nm want
+.Nd the kit's checks of foreign material, Makefiles and banned calls
+.Sh SYNOPSIS
+.Nm foreign-lint
+.Ar root
+.Nm mk-lint
+.Ar root
+.Nm banned-lint
+.Ar root
+.Nm want
+.Op Fl l Ar law
+.Ar status
+.Ar command
+.Op Ar arg ...
+.Sh DESCRIPTION
+A gate reads a tree and decides one mechanical question about it.
+Each is a script that
+.Xr sh 1
+runs from the gates directory, as in
+.Ic sh gates/mk-lint root .
+The kit keeps three:
+.Bl -tag -width banned-lint
+.It Nm foreign-lint
+material that the foundation keeps out of kit inputs (STANDARDS section 1)
+and shell that is not
+.Pa /bin/sh
+with base tools (section 6);
+.It Nm mk-lint
+Makefiles without a real
+.Cm check
+target (sections 3 and 6), and builds that weaken the C99 flags or the
+allocator (section 4);
+.It Nm banned-lint
+calls to C library routines that copy or format without a bound, run a
+shell or convert without an error check (section 4).
+.El
+.Pp
+Each gate walks every regular file under
+.Ar root ,
+judges the files of the kinds it knows, prints each finding on standard
+output and one summary line on standard error.
+A finding is one line of four fields separated by tabs:
+the law, the file, the line number (0 when the finding has none) and the
+reason.
+.Ss Results
+.Bl -tag -width UNKNOWN
+.It PASS
+The gate judged at least one file and found nothing.
+This is bounded evidence about the judged files and the listed laws only.
+.It FAIL
+At least one finding.
+A finding is reported even when other files are UNKNOWN, and those stay
+visible in the output.
+.It UNKNOWN
+The gate could not decide: the walk was refused, a tool failed, no file
+of a judged kind was found, or a construct cannot be decided statically.
+UNKNOWN is never PASS.
+.El
+.Ss The walk
+Every gate walks
+.Ar root
+with
+.Pa walk ,
+which refuses the whole walk, and so makes the gate UNKNOWN, when
+.Ar root
+is missing or starts with
+.Ql - ,
+when any name under it holds a byte outside
+.Ql "A-Z a-z 0-9 . _ + -" ,
+or when a symbolic link or special file is under it.
+Directories named
+.Pa .got
+or
+.Pa .git
+are not walked.
+.Pp
+A directory listed in
+.Pa root/GATE-FIXTURES
+holds deliberate violations, such as these controls, and is not walked.
+Each line is empty, a comment starting with
+.Ql # ,
+or one relative directory path in the name alphabet with no
+.Ql \&.
+or
+.Ql ..
+step, with a step named
+.Pa controls
+or
+.Pa tests ,
+naming an existing directory.
+Any other line refuses the walk, so the list cannot quietly widen.
+.Ss foreign-lint laws
+.Bl -tag -width NO-GNU-MAKE
+.It NO-LINUX
+in C, a Linux-only header such as
+.In sys/epoll.h
+or a token such as
+.Dv __linux__
+or
+.Dv _GNU_SOURCE .
+.It NO-GNU-C
+in C, a GNU extension that
+.Fl std=c99 Fl Wpedantic
+lets through:
+.Dv __attribute__ ,
+.Dv __typeof__ ,
+.Dv __builtin_* ,
+.Dv __extension__ ,
+.Dv __asm__
+or
+.Ql asm( .
+.It NO-GNU-MAKE
+in a Makefile, a GNU conditional, function, pattern rule or directive.
+.It POSIX-SH
+in a shell script, an interpreter other than
+.Pa /bin/sh ,
+or a bashism:
+.Ql [[ ,
+a here-string, an array, a bash builtin, a bash substitution,
+.Ql $'...'
+or
+.Ic source .
+.It NO-GNU-TOOL
+in a script or Makefile,
+.Ic sha256sum ,
+.Ic sha1sum ,
+.Ic md5sum ,
+.Ic tac ,
+.Ic stat -c ,
+.Ic find -printf ,
+.Ic grep -P
+or
+.Ic date -d .
+.It C99-FLAGS
+in a script or Makefile, a
+.Fl std
+setting that is not
+.Cm c99 .
+.It NO-GIT
+a git metadata file, a
+.Pa .git
+directory, or a command that runs git.
+.It PYTHON
+a Python file, or a script or Makefile that runs Python.
+Python is the third tier and needs a written reason (STANDARDS section 1).
+.El
+.Pp
+A C file is judged with its comments removed; a shell script or Makefile
+is judged without its comment lines.
+.Ss mk-lint laws
+Every file named
+.Pa Makefile ,
+.Pa makefile
+or
+.Pa BSDmakefile
+is judged together with the files it includes.
+A quoted include is followed relative to the including file;
+.Ql <file>
+is the system's and is not followed.
+.Bl -tag -width NOCHECK
+.It NOCHECK
+no target named
+.Cm check .
+.It EMPTY
+a target named
+.Cm check
+or
+.Cm test ,
+or starting with
+.Cm check-
+or
+.Cm test- ,
+or ending with
+.Cm -check
+or
+.Cm -test ,
+that executes nothing: its recipe is empty or holds only comments, bare
+continuations,
+.Ql \&: ,
+.Ic true ,
+.Ic exit 0 ,
+or an
+.Ic echo
+or
+.Ic printf
+that pipes, redirects and substitutes nothing.
+An empty recipe whose prerequisites include such a target delegates, and
+is not EMPTY.
+.It FLAGS
+C is built (a
+.Pa .c
+operand,
+.Va ${CC}
+or
+.Pa bsd.prog.mk )
+but no
+.Va CFLAGS
+line carries
+.Fl std=c99 Fl Wall Fl Wextra Fl Wpedantic Fl Werror ;
+or
+.Va CFLAGS
+is replaced without them; or it is set with
+.Ql ?= ,
+which has no effect after
+.Pa sys.mk
+defines it.
+.It WEAKEN
+an option
+.Fl Wno-* ,
+.Fl w
+or
+.Fl fpermissive .
+.It CC
+.Va CC
+set to anything but
+.Ic cc .
+.It MALLOC
+.Ev MALLOC_OPTIONS
+named other than as
+.Ql MALLOC_OPTIONS=S .
+.El
+.Pp
+A target or prerequisite spelled through a variable, an include spelled
+through a variable when no
+.Cm check
+target is seen, a missing include, an include outside
+.Ar root
+and includes nested deeper than eight levels are UNKNOWN.
+.Ss banned-lint law
+.Bl -tag -width BANNED
+.It BANNED
+in a
+.Pa .c
+or
+.Pa .h
+file,
+.Fn gets ,
+.Fn strcpy ,
+.Fn strcat ,
+.Fn sprintf ,
+.Fn vsprintf ,
+.Fn popen ,
+.Fn system
+or
+.Fn atol :
+the name, not part of a longer identifier, followed by
+.Ql \&( .
+Use
+.Xr strlcpy 3 ,
+.Xr strlcat 3 ,
+.Xr snprintf 3 ,
+.Xr strtonum 3
+or
+.Xr execv 3 .
+.El
+.Ss want and the controls
+.Nm want
+runs one case of a gate with standard input from
+.Pa /dev/null
+under a CPU limit of 60 seconds, names its result and compares it with
+.Ar status ,
+which is 0, 1 or 2.
+With
+.Fl l ,
+the output must also hold a line that starts with
+.Ar law
+and a tab.
+It prints one line: the kind of result, ok or WRONG, the wanted status
+and the command; when WRONG, the command's output follows, indented.
+The kinds are PASS, FAIL and UNKNOWN for statuses 0, 1 and 2, SETUP when
+the limit could not be set or the command could not run, TIMEOUT when the
+CPU limit killed it, KILLED for any other signal, and ERROR.
+.Pp
+.Ic make check
+in the gates directory runs every case, so a wrong result never hides
+the cases after it, and exits non-zero if any case was WRONG.
+For each gate it runs the valid positives (the gates' own directory and
+the green controls), a known-bad control for every law, the
+infrastructure failures (a refused registry, a name outside the alphabet,
+a tree with nothing to judge and a missing root), and two cases that show
+a result reaching its caller: a wrong expectation of a red control must
+make
+.Nm want
+exit 1, and a command killed by a signal must be reported as KILLED, never
+as a result of the gate.
+.Sh EXIT STATUS
+The gates exit 0 for PASS, 1 for FAIL and 2 for UNKNOWN, including a
+usage error.
+.Nm want
+exits 0 when the result is the wanted one, 1 when it is not and 2 on a
+usage error.
+.Sh FILES
+.Bl -tag -width Ds -compact
+.It Pa gates/walk
+the walk shared by the three gates
+.It Pa gates/foreign.awk , gates/mk.awk
+the judging programs, run by
+.Xr awk 1
+.It Pa root/GATE-FIXTURES
+the directories a gate does not walk
+.It Pa controls/
+the fixtures of every control, by gate
+.El
+.Sh EXAMPLES
+Run every control:
+.Bd -literal -offset indent
+$ cd gates && make check
+.Ed
+.Pp
+Judge one component, here the controls' own green Makefile:
+.Bd -literal -offset indent
+$ sh gates/mk-lint controls/mk/good; echo $?
+mk-lint: PASS makefiles=1 failed=0 unknown=0
+0
+.Ed
+.Pp
+A known-bad control:
+.Bd -literal -offset indent
+$ sh gates/banned-lint controls/banned/red; echo $?
+BANNED	controls/banned/red/main.c	7		return strcpy(d, s);
+banned-lint: FAIL judged=1 findings=1 unknown=0
+1
+.Ed
+.Sh SEE ALSO
+.Xr awk 1 ,
+.Xr find 1 ,
+.Xr make 1 ,
+.Xr sh 1 ,
+.Xr malloc 3 ,
+.Xr style 9
+.Sh AUTHORS
+Ported for card GATES-PORT from the frozen
+.Pa tools/
+of src.git 75ad5ce4: stack-law-lint, check-targets-lint, house-mk-law
+and product-banned-calls-lint, written by
+.An Prometheus ,
+.An Claudia
+and
+.An Kiki .
+.Sh CAVEATS
+Each gate is a search for markers.
+It helps to find what it names and never shows that nothing else is
+there: only a reconciled dependency inventory shows that foreign
+material is excluded, and only the native build shows that the code
+compiles under the flags.
+.Pp
+No gate preprocesses or parses.
+Code in
+.Ql #if 0 ,
+a macro that expands to a banned call, a call through a function pointer,
+a comment marker inside a string, a dialect chosen in a variable that is
+set elsewhere, a non-base tool not named above, and a construct split
+across a line continuation are not seen.
+A banned name followed by
+.Ql \&(
+in a comment or string is reported.
+.Pp
+.Nm mk-lint
+does not evaluate conditionals: a
+.Cm check
+target inside a false
+.Ic .if
+still counts.
+It reads the strict flags only on the
+.Va CFLAGS
+line itself, not on its continuation lines, and does not see a
+.Va CFLAGS
+given on the
+.Xr make 1
+command line.
+.Pp
+The awk programs are not themselves judged for GNU awk extensions; a run
+under the base
+.Xr awk 1
+is what shows they need none.
+.Sh SECURITY CONSIDERATIONS
+The gates read untrusted bytes: a returned tree is written by a seat and
+is judged before anyone reviews it.
+They protect the honesty of their result, not any secret.
+They trust
+.Xr sh 1 ,
+.Xr awk 1 ,
+.Xr find 1 ,
+.Xr grep 1
+and
+.Xr sort 1
+of the base system, and their own scripts.
+They read only under
+.Ar root
+(and
+.Pa /dev/null ) ,
+write only to standard output and standard error, create no file, use no
+network and read no clock.
+Only base programs read the contents of a judged file; the shell handles
+names alone, after
+.Pa walk
+has checked them against the name alphabet, and never runs text from the
+tree as shell source.
+Nobody can delegate authority over a gate; it holds none to delegate.
+A gate that cannot complete its walk or a tool run reports UNKNOWN and
+changes nothing.
+.Pp
+They are shell components, and STANDARDS section 5 asks that a shell
+component be confined by a C99 launcher.
+The kit has none yet, so nothing but the user's own permissions limits
+what a compromised base tool could touch while a gate runs.

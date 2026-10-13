@@ -1,0 +1,73 @@
+#!/bin/sh
+# foreign-lint: find foreign material in a kit tree (STANDARDS 1 and 6):
+# Linux headers and tokens, GNU C, GNU make, shell that is not POSIX
+# /bin/sh, GNU tools, git, Python and any C dialect but C99.  The laws and
+# their limits are in gates(7).  Findings go to stdout, one summary line to
+# stderr.  Exit 0 PASS, 1 FAIL, 2 UNKNOWN.
+
+set -u
+LC_ALL=C
+export LC_ALL
+here=$(dirname -- "$0")
+
+if [ $# -ne 1 ]; then
+	echo "usage: foreign-lint root" >&2
+	exit 2
+fi
+if ! files=$(sh "$here/walk" "$1"); then
+	echo "foreign-lint: UNKNOWN: the walk of $1 failed" >&2
+	exit 2
+fi
+if ! gitdirs=$(find "$1" -name .git -print -prune); then
+	echo "foreign-lint: UNKNOWN: find failed under $1" >&2
+	exit 2
+fi
+
+judged=0
+found=0
+unknown=0
+IFS='
+'
+set -f
+for d in $gitdirs; do
+	printf 'NO-GIT\t%s\t0\ta .git directory\n' "$d"
+	found=$((found + 1))
+done
+for f in $files; do
+	# A git metadata file is often empty, so its name alone is judged.
+	case ${f##*/} in
+	.gitignore | .gitattributes | .gitmodules | .gitkeep)
+		printf 'NO-GIT\t%s\t0\tgit metadata file\n' "$f"
+		judged=$((judged + 1))
+		found=$((found + 1))
+		continue
+		;;
+	esac
+	awk -f "$here/foreign.awk" "$f" < /dev/null
+	case $? in
+	0)
+		judged=$((judged + 1))
+		;;
+	1)
+		judged=$((judged + 1))
+		found=$((found + 1))
+		;;
+	4)
+		;;
+	*)
+		printf 'UNKNOWN\t%s\t0\tawk failed\n' "$f"
+		unknown=$((unknown + 1))
+		;;
+	esac
+done
+
+if [ "$found" -gt 0 ]; then
+	verdict=FAIL status=1
+elif [ "$unknown" -gt 0 ] || [ "$judged" -eq 0 ]; then
+	verdict=UNKNOWN status=2
+else
+	verdict=PASS status=0
+fi
+echo "foreign-lint: $verdict judged=$judged files_failed=$found" \
+    "unknown=$unknown" >&2
+exit "$status"

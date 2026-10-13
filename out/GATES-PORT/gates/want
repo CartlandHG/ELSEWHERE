@@ -1,0 +1,79 @@
+#!/bin/sh
+# want: run one case of a gate and compare its result with the one wanted
+# (STANDARDS 3).  The command runs with stdin from /dev/null under a CPU
+# limit of 60 seconds.  Its exit status is named as a kind: PASS (0),
+# FAIL (1), UNKNOWN (2), SETUP (125 to 127: the limit could not be set or
+# the command could not run), TIMEOUT (killed by SIGXCPU), KILLED (any
+# other signal) or ERROR.  With -l, the output must also hold a line that
+# starts with LAW and a tab, such as a finding of that law.
+#
+# Prints KIND<TAB>ok or WRONG<TAB>the wanted status<TAB>the command, then,
+# when WRONG, the command's output indented by four spaces.  Exit 0 when
+# the result is the wanted one, 1 when it is not, 2 on a usage error.
+
+set -u
+LC_ALL=C
+export LC_ALL
+nl='
+'
+tab=$(printf '\t')
+
+usage()
+{
+	echo "usage: want [-l law] status command [arg ...]" >&2
+	exit 2
+}
+
+law=
+if [ "${1:-}" = -l ]; then
+	[ $# -ge 2 ] || usage
+	law=$2
+	shift 2
+fi
+[ $# -ge 2 ] || usage
+case $1 in
+0 | 1 | 2)
+	;;
+*)
+	usage
+	;;
+esac
+wanted=$1
+shift
+
+out=$( (ulimit -t 60 || exit 125; exec "$@") < /dev/null 2>&1)
+got=$?
+case $got in
+0)	kind=PASS ;;
+1)	kind=FAIL ;;
+2)	kind=UNKNOWN ;;
+125 | 126 | 127)
+	kind=SETUP ;;
+152)	kind=TIMEOUT ;;
+*)
+	if [ "$got" -gt 128 ]; then
+		kind=KILLED
+	else
+		kind=ERROR
+	fi
+	;;
+esac
+
+verdict=WRONG
+if [ "$got" -eq "$wanted" ] && [ -z "$law" ]; then
+	verdict=ok
+elif [ "$got" -eq "$wanted" ]; then
+	case $nl$out in
+	*"$nl$law$tab"*)
+		verdict=ok
+		;;
+	esac
+fi
+printf '%s\t%s\twant %s\t%s\n' "$kind" "$verdict" "$wanted" "$*"
+[ "$verdict" = ok ] && exit 0
+IFS=$nl
+set -f
+for line in $out; do
+	printf '    %s\n' "$line"
+done
+exit 1

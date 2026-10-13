@@ -1,0 +1,98 @@
+#!/bin/sh
+# walk: print the regular files under ROOT that the gates judge, one per
+# line, for foreign-lint, mk-lint and banned-lint; gates(7) describes them.
+#
+# Directories named .got or .git are not walked: foreign-lint finds .git
+# itself.  A directory listed in ROOT/GATE-FIXTURES holds deliberate
+# violations, such as the gates' own controls, and is not walked either.
+# The list is checked so that it cannot quietly widen: each entry is one
+# relative path in the name alphabet, with no "." or ".." step, with a
+# step named controls or tests, naming an existing directory.  Lines that
+# are empty or start with "#" are skipped.
+#
+# Every name under ROOT must be in the alphabet A-Z a-z 0-9 . _ + -, so
+# that a name can never carry a newline, a space or a glob character into
+# a caller's word splitting.  A symbolic link or any other file that is
+# neither regular nor a directory is refused, never silently skipped.
+#
+# Exit 0 with the list on stdout, or 2 with one line on stderr naming why
+# the walk cannot be trusted.
+
+set -u
+LC_ALL=C
+export LC_ALL
+
+if [ $# -ne 1 ] || [ ! -d "$1" ]; then
+	echo "walk: usage: walk root (an existing directory)" >&2
+	exit 2
+fi
+root=$1
+while [ "$root" != / ] && [ "${root%/}" != "$root" ]; do
+	root=${root%/}
+done
+case $root in
+-* | *[!A-Za-z0-9._/+-]*)
+	echo "walk: root name outside the alphabet" >&2
+	exit 2
+	;;
+esac
+
+if ! bad=$(find "$root" -name '*[!A-Za-z0-9._+-]*' -print); then
+	echo "walk: find failed under $root" >&2
+	exit 2
+fi
+if [ -n "$bad" ]; then
+	echo "walk: a name under $root is outside the alphabet" >&2
+	exit 2
+fi
+
+# Build the prune expression as arguments, never as shell source.
+set -- -name .got -o -name .git
+if [ -f "$root/GATE-FIXTURES" ]; then
+	n=0
+	while IFS= read -r entry || [ -n "$entry" ]; do
+		n=$((n + 1))
+		case $entry in
+		'' | '#'*)
+			continue
+			;;
+		*[!A-Za-z0-9._/+-]* | /* | */ | . | .. | ./* | ../* | */. | \
+		    */.. | */./* | */../* | *//*)
+			echo "walk: GATE-FIXTURES line $n:" \
+			    "not a plain relative path" >&2
+			exit 2
+			;;
+		controls | tests | controls/* | tests/* | */controls | \
+		    */tests | */controls/* | */tests/*)
+			;;
+		*)
+			echo "walk: GATE-FIXTURES line $n:" \
+			    "no controls or tests step" >&2
+			exit 2
+			;;
+		esac
+		if [ -L "$root/$entry" ] || [ ! -d "$root/$entry" ]; then
+			echo "walk: GATE-FIXTURES line $n: not a directory" >&2
+			exit 2
+		fi
+		set -- "$@" -o -path "$root/$entry"
+	done < "$root/GATE-FIXTURES"
+fi
+
+if ! odd=$(find "$root" \( "$@" \) -prune -o ! -type f ! -type d -print)
+then
+	echo "walk: find failed under $root" >&2
+	exit 2
+fi
+if [ -n "$odd" ]; then
+	echo "walk: a link or special file is under $root" >&2
+	exit 2
+fi
+if ! list=$(find "$root" \( "$@" \) -prune -o -type f -print); then
+	echo "walk: find failed under $root" >&2
+	exit 2
+fi
+[ -n "$list" ] || exit 0
+sort <<EOF
+$list
+EOF

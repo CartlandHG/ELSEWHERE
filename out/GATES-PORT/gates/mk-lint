@@ -1,0 +1,162 @@
+#!/bin/sh
+# mk-lint: judge every Makefile in a kit tree (STANDARDS 3, 4 and 6): it
+# has a check target, no check or test target executes nothing, C is
+# built with -std=c99 -Wall -Wextra -Wpedantic -Werror, no option weakens
+# the warnings, CC is the base cc and MALLOC_OPTIONS is never weakened.
+# The laws and their limits are in gates(7).  Findings go to stdout, one
+# summary line to stderr.  Exit 0 PASS, 1 FAIL, 2 UNKNOWN.
+
+set -u
+LC_ALL=C
+export LC_ALL
+here=$(dirname -- "$0")
+nl='
+'
+
+# The physical path of file $1, which must exist.
+physical()
+{
+	(cd -- "${1%/*}" 2>/dev/null && printf '%s/%s\n' "$(pwd -P)" \
+	    "${1##*/}")
+}
+
+# Prints the operands of every include line of a Makefile.
+include_awk='$1 ~ /^(\.-?|\.[sd]|-|s)?include$/ {
+	for (i = 2; i <= NF && $i !~ /^#/; i++)
+		print $i
+}'
+
+# Resolves include operand $2 of file $1.  Sets inc and p, its physical
+# path, and returns 0; returns 2 for an include that is not followed: the
+# system's <file>, or one spelled through a variable, which unresolved
+# counts; returns 1 with why set when the include is missing, unsafe or
+# outside the root.
+resolve()
+{
+	case $2 in
+	\<*)
+		return 2
+		;;
+	*'$'*)
+		unresolved=$((unresolved + 1))
+		return 2
+		;;
+	esac
+	name=${2#\"}
+	name=${name%\"}
+	case $name in
+	/* | *[!A-Za-z0-9._/+-]*)
+		why="$1 includes $name: an absolute or unsafe path"
+		return 1
+		;;
+	esac
+	inc=${1%/*}/$name
+	if [ ! -f "$inc" ] || ! p=$(physical "$inc"); then
+		why="$1 includes $name, which is missing"
+		return 1
+	fi
+	case $p in
+	"$rootp"/*)
+		return 0
+		;;
+	esac
+	why="$1 includes $name, outside the root"
+	return 1
+}
+
+# Sets closure to Makefile $1 and the files it includes, one per line.
+# Returns 1 with why set when an include cannot be resolved or includes
+# nest deeper than 8 levels.
+include_closure()
+{
+	closure=$1 todo=$1 unresolved=0 depth=0
+	seen=$(physical "$1") || seen=$1
+	while [ -n "$todo" ]; do
+		depth=$((depth + 1))
+		if [ "$depth" -gt 8 ]; then
+			why="includes nest deeper than 8 levels"
+			return 1
+		fi
+		more=
+		for f in $todo; do
+			if ! names=$(awk "$include_awk" "$f" < /dev/null); then
+				why="awk failed on $f"
+				return 1
+			fi
+			for name in $names; do
+				resolve "$f" "$name"
+				case $? in
+				1)
+					return 1
+					;;
+				2)
+					continue
+					;;
+				esac
+				case $nl$seen$nl in
+				*"$nl$p$nl"*)
+					;;
+				*)
+					seen=$seen$nl$p
+					closure=$closure$nl$inc
+					more=$more$nl$inc
+					;;
+				esac
+			done
+		done
+		todo=$more
+	done
+}
+
+if [ $# -ne 1 ]; then
+	echo "usage: mk-lint root" >&2
+	exit 2
+fi
+if ! files=$(sh "$here/walk" "$1") || ! rootp=$(cd -- "$1" && pwd -P)
+then
+	echo "mk-lint: UNKNOWN: the walk of $1 failed" >&2
+	exit 2
+fi
+
+judged=0
+failed=0
+unknown=0
+IFS=$nl
+set -f
+for mk in $files; do
+	case ${mk##*/} in
+	Makefile | makefile | BSDmakefile)
+		;;
+	*)
+		continue
+		;;
+	esac
+	judged=$((judged + 1))
+	if ! include_closure "$mk"; then
+		printf 'UNKNOWN\t%s\t0\t%s\n' "$mk" "$why"
+		unknown=$((unknown + 1))
+		continue
+	fi
+	awk -v makefile="$mk" -v unresolved="$unresolved" \
+	    -f "$here/mk.awk" $closure < /dev/null
+	case $? in
+	0)
+		;;
+	1)
+		failed=$((failed + 1))
+		;;
+	*)
+		unknown=$((unknown + 1))
+		;;
+	esac
+done
+
+if [ "$failed" -gt 0 ]; then
+	verdict=FAIL status=1
+elif [ "$unknown" -gt 0 ] || [ "$judged" -eq 0 ]; then
+	verdict=UNKNOWN status=2
+else
+	verdict=PASS status=0
+fi
+echo "mk-lint: $verdict makefiles=$judged failed=$failed unknown=$unknown" >&2
+exit "$status"

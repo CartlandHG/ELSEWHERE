@@ -1,0 +1,66 @@
+#!/bin/sh
+# banned-lint: find calls to unbounded or shell-running C library routines
+# in a kit tree (STANDARDS 4): gets, strcpy, strcat, sprintf, vsprintf,
+# popen, system and atol.  A call is the name, not part of a longer
+# identifier, followed by "(".  The limits are in gates(7).  Findings go
+# to stdout, one summary line to stderr.  Exit 0 PASS, 1 FAIL, 2 UNKNOWN.
+
+set -u
+LC_ALL=C
+export LC_ALL
+here=$(dirname -- "$0")
+banned='(^|[^A-Za-z0-9_])(gets|strcpy|strcat|sprintf|vsprintf|popen|'
+banned=$banned'system|atol)[[:space:]]*\('
+
+if [ $# -ne 1 ]; then
+	echo "usage: banned-lint root" >&2
+	exit 2
+fi
+if ! files=$(sh "$here/walk" "$1"); then
+	echo "banned-lint: UNKNOWN: the walk of $1 failed" >&2
+	exit 2
+fi
+
+judged=0
+found=0
+unknown=0
+IFS='
+'
+set -f
+for f in $files; do
+	case $f in
+	*.c | *.h)
+		;;
+	*)
+		continue
+		;;
+	esac
+	judged=$((judged + 1))
+	hits=$(grep -nE "$banned" "$f" < /dev/null)
+	case $? in
+	0)
+		for hit in $hits; do
+			printf 'BANNED\t%s\t%s\t%s\n' "$f" "${hit%%:*}" \
+			    "${hit#*:}"
+			found=$((found + 1))
+		done
+		;;
+	1)
+		;;
+	*)
+		printf 'UNKNOWN\t%s\t0\tgrep failed\n' "$f"
+		unknown=$((unknown + 1))
+		;;
+	esac
+done
+
+if [ "$found" -gt 0 ]; then
+	verdict=FAIL status=1
+elif [ "$unknown" -gt 0 ] || [ "$judged" -eq 0 ]; then
+	verdict=UNKNOWN status=2
+else
+	verdict=PASS status=0
+fi
+echo "banned-lint: $verdict judged=$judged findings=$found" \
+    "unknown=$unknown" >&2
+exit "$status"
