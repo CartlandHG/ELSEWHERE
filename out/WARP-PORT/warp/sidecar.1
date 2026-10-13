@@ -1,0 +1,172 @@
+.Dd October 13, 2026
+.Dt SIDECAR 1
+.Os ELSEWHERE
+.Sh NAME
+.Nm sidecar
+.Nd check a byte-range sidecar and select the bytes it describes
+.Sh SYNOPSIS
+.Nm
+.Cm check
+.Ar file
+.Nm
+.Cm select
+.Ar file
+.Ar content
+.Sh DESCRIPTION
+.Nm
+reads one sidecar in the
+.Ql weft-byte-range/1
+format of
+.Xr sidecar 5 .
+.Bl -tag -width Ds
+.It Cm check Ar file
+Check that
+.Ar file
+follows the format: its header grammar, its key table, every value's
+alphabet and its size limits, and that its body is UTF-8 text.
+Print nothing and exit 0 when it does.
+.It Cm select Ar file content
+Check
+.Ar file
+as above, then resolve it against
+.Ar content ,
+a regular file the caller names as the place to look.
+The name grants nothing: the bytes are accepted only by their size and
+digest.
+.Nm
+reads the whole of
+.Ar content
+once into memory, verifies that its size equals
+.Cm content_size
+and its SHA256 equals
+.Cm content_sha256 ,
+and then writes the selected range, from
+.Cm offset
+for
+.Cm length
+bytes, to standard output from that verified copy.
+Nothing is written before the content is verified.
+.El
+.Pp
+This is the content-only resolver profile.
+It has no store, index or network source: the caller names the content
+file.
+Its capacity is 67108864 bytes of content; a larger
+.Cm content_size
+is refused before anything is read.
+It does not verify native provenance, so a sidecar that carries
+.Cm docid
+and
+.Cm revision_sha256
+passes
+.Cm check
+but is refused by
+.Cm select ,
+never resolved as content-only.
+.Pp
+Each refusal is one line on standard error naming the file, the header line
+when there is one, and the reason.
+.Nm
+stops at the first refusal; there is no partial result and no repair.
+.Sh EXIT STATUS
+The exit status is the public result.
+.Bl -tag -width Ds
+.It 0
+Success.
+For
+.Cm select ,
+standard output holds exactly the selected bytes, which may be none.
+.It 1
+The description is malformed or unsupported: it breaks the grammar, a key
+table rule, an alphabet or a size limit of
+.Xr sidecar 5 ,
+names another schema, or asks
+.Cm select
+to verify native provenance.
+.It 2
+The sidecar or the content is unavailable: missing, not readable, or not a
+regular file.
+.It 3
+The content's identity does not match: its size or its digest differs from
+the description, including when the file changes while it is read.
+.It 4
+The range lies outside the content, or
+.Cm content_size
+is over this profile's capacity, or memory for the content cannot be
+allocated.
+.It 5
+Reading the input or writing standard output failed.
+.It 6
+Usage or setup failure: wrong operands, or
+.Xr pledge 2
+refused.
+.El
+.Pp
+After any status but 0, discard whatever standard output holds: a write
+failure can leave part of the range behind.
+.Sh EXAMPLES
+Describe the last two bytes of the three-byte content
+.Ql abc ,
+check the description, and select the bytes:
+.Bd -literal -offset indent
+$ printf abc > abc
+$ cat > abc.md <<'EOF'
+---
+schema: "weft-byte-range/1"
+content_sha256: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+content_size: "3"
+offset: "1"
+length: "2"
+---
+# A small passage
+EOF
+$ sidecar check abc.md
+$ sidecar select abc.md abc
+bc
+.Ed
+.Pp
+The selected bytes have no newline, so the shell prompt follows them on the
+same line.
+After the content changes, the same description is refused:
+.Bd -literal -offset indent
+$ printf abX > abc
+$ sidecar select abc.md abc
+sidecar: abc: digest differs from content_sha256
+$ echo $?
+3
+.Ed
+.Sh SEE ALSO
+.Xr sha256 1 ,
+.Xr sidecar 5
+.Sh STANDARDS
+The format and the result classes follow
+.Pa policy/ADDRESSING.md ,
+edition
+.Ql 2026-10-13.v3 .
+.Sh AUTHORS
+Written by Claude (claude.ai/code) for ELSEWHERE, card WARP-PORT, from the
+Python sidecar validator and warp object store of src.git 75ad5ce4.
+.Sh CAVEATS
+A digest identifies bytes.
+It does not establish authorship, truth, consent or access, and a sidecar
+grants no authority to fetch or publish anything.
+.Pp
+The whole content is held in memory while it is verified, up to the
+capacity above.
+.Sh SECURITY CONSIDERATIONS
+.Nm
+protects its caller from serving bytes other than the ones described: it
+never clamps a range, never serves unverified or substitute bytes, and never
+reports success without a verified selection.
+It trusts the kernel, the SHA256 implementation of the C library, and the
+caller's choice of operand paths.
+Before reading any byte, it opens its operands and then calls
+.Xr pledge 2
+with
+.Qq stdio
+alone, so it cannot open, create or execute anything, use the network or
+touch any other path; it may only read the two descriptors it holds and
+write standard output and standard error.
+.Xr unveil 2
+is not used, because no path operation remains after that point.
+Nothing is delegated and nothing persists; a failure leaves no state.

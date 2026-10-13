@@ -1,0 +1,174 @@
+.Dd October 13, 2026
+.Dt SIDECAR 5
+.Os ELSEWHERE
+.Sh NAME
+.Nm sidecar
+.Nd description of an exact byte range, schema weft-byte-range/1
+.Sh DESCRIPTION
+A sidecar describes one range of bytes in some content that is identified
+by its SHA256.
+It is a separate UTF-8 Markdown file in two parts: a restricted header that
+programs act on, and a Markdown body that people read.
+The body may describe context, authorship, associations and purpose.
+Neither part grants authority or executes anything.
+.Pp
+The sidecar's own bytes have their own identity.
+Editing the description does not change the address of the bytes it
+describes, and moving or renaming either file changes neither identity.
+.Ss Identity and range
+The content is identified by the SHA256 of its complete, exact bytes,
+including any final newline, together with its complete size in bytes.
+The range is half-open:
+.Ql [offset, offset + length) .
+All three numbers are unsigned byte counts from 0 to 18446744073709551615.
+A reader checks
+.Ql offset <= content_size
+and
+.Ql length <= content_size - offset
+before any addition, and refuses a range outside the content; it never
+clamps it.
+A zero-length range at the end of the content is valid.
+An unknown span is never written as a zero-length range.
+.Ss Header grammar
+The file begins with the exact line
+.Ql ---
+and a newline.
+Each entry is exactly
+.Ql key: \(dqvalue\(dq
+and a newline: the key, a colon, one space, and the value in double quotes.
+Another exact
+.Ql ---
+line closes the header.
+There is no byte order mark, directive, comment, blank line, indentation,
+trailing white space, tab or carriage return in the header.
+Values contain only their key's alphabet, so there are no escapes.
+The header, including both delimiters, is at most 1024 bytes, and the whole
+sidecar at most 1048576 bytes.
+This grammar is a restricted subset of YAML 1.2, the one
+.Xr jobcard 5
+defines; a general YAML parser does not establish that a file follows it.
+.Ss Keys
+The first five keys are required exactly once.
+.Cm docid
+and
+.Cm revision_sha256
+are present together or not at all.
+Readers accept any order; writers use this order.
+.Bl -tag -width "revision_sha256"
+.It Cm schema
+Exactly
+.Ql weft-byte-range/1 .
+.It Cm content_sha256
+The SHA256 of the complete content, as 64 lowercase hexadecimal digits.
+.It Cm content_size
+The complete size of the content in bytes, as a canonical unsigned
+decimal:
+.Ql 0
+or
+.Ql [1-9][0-9]* ,
+at most 18446744073709551615.
+.It Cm offset
+The first byte of the range, in the same decimal grammar.
+.It Cm length
+The number of bytes in the range, in the same decimal grammar.
+.It Cm docid
+Optional: the native document that holds this content, as 1 to 32 bytes of
+.Ql [A-Za-z0-9._-] ,
+not beginning with a dot.
+.It Cm revision_sha256
+Present exactly when
+.Cm docid
+is: the native revision, as 64 lowercase hexadecimal digits, not all zero.
+.El
+.Pp
+Without
+.Cm docid
+and
+.Cm revision_sha256
+the address is content-only and makes no claim about any document.
+With them, a resolver must verify the revision record, its document, its
+content digest and its size before it reports the binding resolved, and a
+failure to verify them is never reported as content-only success.
+.Ss Body
+The body is everything after the closing delimiter, and may be empty.
+It is data, never further header.
+It is valid UTF-8 as RFC 3629 defines it: no overlong form, no surrogate
+and nothing above U+10FFFF.
+It holds no control character but tab and newline: no U+0000 to U+001F
+otherwise, no U+007F and no U+0080 to U+009F.
+Writers use newline line endings and end a body that is not empty with a
+newline.
+.Ss Refusal
+A reader refuses a sidecar, and takes nothing from it, when:
+.Bl -bullet
+.It
+the file does not begin with the exact opening line, has no closing
+delimiter within 1024 bytes, or is over 1048576 bytes;
+.It
+a header line is not exactly
+.Ql key: \(dqvalue\(dq ,
+which refuses unquoted and single-quoted values, extra tokens, aliases,
+anchors, tags, collections, nulls and multiline scalars;
+.It
+a key is unknown, which refuses merge keys, or duplicated, or a required
+key is missing, or only one of
+.Cm docid
+and
+.Cm revision_sha256
+is present;
+.It
+.Cm schema
+is any other value, including another version or another domain such as
+text, image or audio coordinates;
+.It
+a value breaks its alphabet: an empty value, a sign, a leading zero, a
+decimal point, an underscore, an exponent, a number over
+18446744073709551615, uppercase or short hexadecimal, or a docid that is
+too long, begins with a dot or holds another byte;
+.It
+the file holds a NUL byte, or the body is not valid UTF-8 or holds a
+refused control character.
+.El
+.Pp
+A resolver also refuses, with a distinct result, a range outside the
+content, content over its capacity, content whose size or digest differs
+from the description, and content it cannot read.
+It never returns substitute bytes as the requested content.
+.Sh EXAMPLES
+The last two bytes,
+.Ql bc ,
+of the three-byte content
+.Ql abc ,
+with no newline:
+.Bd -literal -offset indent
+---
+schema: "weft-byte-range/1"
+content_sha256: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+content_size: "3"
+offset: "1"
+length: "2"
+---
+# A small passage
+
+The selected bytes are bc. This description is not the selected content.
+.Ed
+.Sh SEE ALSO
+.Xr jobcard 5 ,
+.Xr sidecar 1
+.Sh STANDARDS
+This page restates the
+.Ql weft-byte-range/1
+schema of
+.Pa policy/ADDRESSING.md ,
+edition
+.Ql 2026-10-13.v3 ,
+which governs where the two differ.
+The body's control-character rule applies STANDARDS.md section 8.
+.Sh CAVEATS
+SHA256 identifies bytes; it is not authenticity, truth, authorization or
+confidentiality.
+A sidecar, a digest or a link never authorizes fetching, publishing or
+crossing a private boundary.
+.Pp
+Extending the schema needs a new version with explicit reader and writer
+compatibility, not new keys in this one.
