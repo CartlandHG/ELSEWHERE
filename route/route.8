@@ -1,0 +1,626 @@
+.Dd October 13, 2026
+.Dt ROUTE 8
+.Os ELSEWHERE
+.Sh NAME
+.Nm route
+.Nd queue and dispatcher of job cards
+.Sh SYNOPSIS
+.Nm route
+.Op Fl d Ar dir
+.Cm add Ar file
+.Nm route
+.Op Fl d Ar dir
+.Cm hold Ar job
+.Nm route
+.Op Fl d Ar dir
+.Cm release Ar job
+.Nm route
+.Op Fl d Ar dir
+.Cm status
+.Nm route
+.Op Fl d Ar dir
+.Cm serve Ar seat
+.Sh DESCRIPTION
+.Nm
+keeps a queue of job cards, as
+.Xr jobcard 5
+defines them, and hands each card to the one seat it names.
+It decides scope and custody, never acceptance.
+It is not a daemon and opens no listener:
+.Xr sshd 8
+is the transport.
+Each seat reaches
+.Nm
+through its own forced-command key, whose command is
+.Ql route serve Ar seat ,
+so a seat is known by its channel, never by what it says in a request.
+The operator runs the other verbs on the build host as the router's user.
+.Pp
+The state is one directory of stage directories, an append-only ledger and
+a lock; see
+.Sx FILES .
+A job is a directory named by its
+.Cm job
+field.
+It lives in exactly one stage directory, and the stage directories are the
+truth.
+Each transition commits with one
+.Xr rename 2
+of the job's directory from one stage directory to another, and then
+appends one line to the ledger, which is the history.
+Every transition, and
+.Cm status ,
+holds an exclusive
+.Xr flock 2
+on the lock, so concurrent invocations are serialised and
+.Cm status
+never sees a job between two stages.
+.Pp
+The option is:
+.Bl -tag -width Ds
+.It Fl d Ar dir
+Use the state directory
+.Ar dir
+instead of
+.Pa /var/route .
+It is meant for tests.
+.El
+.Pp
+A
+.Ar job
+operand, from the command line or from a request, is refused (exit 1)
+unless it matches the job alphabet of
+.Xr jobcard 5 ,
+.Ql [A-Z0-9][A-Z0-9-]{0,63} .
+A
+.Ar seat
+operand must match
+.Ql [a-z][a-z0-9-]{0,31} ,
+or
+.Nm
+exits 2.
+Both are checked before any path is built from them.
+.Pp
+The verbs are:
+.Bl -tag -width Ds
+.It Cm add Ar file
+Read
+.Ar file ,
+which must be at most 65536 bytes, and read
+.Pa /etc/route.conf ,
+also at most 65536 bytes, each exactly once.
+Copy both into a new private staging directory
+.Pa tmp/add.XXXXXXXXXX
+and run
+.Ql card -c tmp/add.XXXXXXXXXX/conf tmp/add.XXXXXXXXXX/card
+with an empty environment.
+Unless
+.Xr card 1
+exits 0 the card is refused.
+So the bytes judged are the bytes kept, and the configuration judged is the
+one used.
+.Pp
+Then
+.Nm
+takes the values
+.Cm job
+and
+.Cm outputs
+from the card and
+.Cm return_max
+from the configuration.
+It reads only the header: the first line between the opening
+.Ql ---
+line and the next
+.Ql ---
+line that begins with the key, a colon, a space and a double quote.
+A body line of the same shape is never read.
+.Pp
+The card is refused if one of its
+.Cm outputs
+names a file that a ustar header cannot hold: a name longer than 100 bytes
+that cannot be split at one
+.Ql /
+into a prefix of at most 155 bytes and a name of at most 100 bytes.
+It is refused if a job of the same name exists in any stage: an identity
+is never reused.
+Otherwise the staging directory, holding
+.Pa card
+and
+.Pa return_max ,
+is committed to
+.Pa queue/ Ns Ar job .
+The job keeps that
+.Cm return_max ;
+a later edit of
+.Pa /etc/route.conf
+does not change it.
+.It Cm hold Ar job
+Commit
+.Ar job
+from
+.Pa queue/ ,
+.Pa sent/
+or
+.Pa delivered/
+to
+.Pa held/ ,
+after recording in its
+.Pa held_from
+file the stage it came from.
+A job in any other stage, or no job, is refused.
+.It Cm release Ar job
+Commit
+.Pa held/ Ns Ar job
+to
+.Pa queue/ ,
+only if it was held from
+.Pa queue/ .
+A job held after it left the queue may have reached its seat, so it is
+refused and never sent again under the same identity.
+A retry is a new card with a new
+.Cm job ,
+made by an explicit act.
+.It Cm status
+Print one line per job,
+.Dl Ar stage job seat
+separated by single spaces, where
+.Ar stage
+is the name of its stage directory.
+The lines are in byte order, so they are sorted by stage name and then by
+job.
+It changes nothing.
+.It Cm serve Ar seat
+Read one request from standard input and answer it for
+.Ar seat ,
+as the next section describes.
+.El
+.Ss Request protocol
+A request is one line of at most 128 bytes, including its terminating
+newline.
+.Nm
+reads it one byte at a time, so it never consumes a byte after the newline.
+Its words are separated by single spaces; a line with an empty word, a NUL
+byte or no newline within 128 bytes is refused.
+On this channel, standard output carries only the protocol; diagnostics go
+to standard error.
+.Bl -tag -width Ds
+.It Cm next
+Claim the job whose name comes first in byte order among the jobs in
+.Pa queue/
+whose
+.Cm seat
+is
+.Ar seat .
+Commit it to
+.Pa sent/ ,
+then write to standard output the line
+.Dl card Ar job sha256 size
+followed by exactly
+.Ar size
+bytes, the card.
+.Ar sha256
+is the SHA256 of those bytes in 64 lowercase hexadecimal digits and
+.Ar size
+is a decimal count.
+If no job is queued for
+.Ar seat ,
+exit 3 and print nothing.
+.It Cm delivered Ar job
+Commit
+.Pa sent/ Ns Ar job
+to
+.Pa delivered/ .
+The seat's client sends this only after it has checked the card's digest.
+It may send it again after a broken connection: for this seat's job already
+in
+.Pa delivered/
+or
+.Pa returned/
+it changes nothing and exits 0.
+.It Cm returned Ar job size
+.Ar size
+must be a canonical decimal: digits only, no sign, no leading zero, at most
+67108864.
+The job must be this seat's and in
+.Pa delivered/
+or
+.Pa returned/ ,
+and
+.Ar size
+must not exceed the job's
+.Cm return_max .
+If any of these fails, nothing more is read.
+Otherwise read exactly
+.Ar size
+bytes, the return archive, and nothing more, and check it as
+.Sx Return archive
+describes.
+If it holds and the job is in
+.Pa delivered/ ,
+store it byte for byte as
+.Pa return.tar
+in the job's directory and commit the job to
+.Pa returned/ .
+If the job is already in
+.Pa returned/ ,
+a repeat changes nothing and exits 0 when the archive has the same SHA256
+as the stored one, and is refused when it does not.
+.El
+.Pp
+Anything else is refused and changes nothing: an unknown or malformed
+request, a job that does not exist or whose
+.Cm seat
+is not
+.Ar seat ,
+and a job in a stage the request does not allow.
+.Ss Return archive
+The archive is POSIX ustar, as
+.Ql tar -cf - Ar names
+on
+.Ox
+writes it for a list of regular files.
+It must hold exactly the card's
+.Cm outputs
+plus the top-level file
+.Pa SHA256SUMS ,
+and is refused unless all of these hold:
+.Bl -bullet
+.It
+.Ar size
+is a multiple of 512;
+.It
+every header has the magic
+.Ql ustar
+followed by a NUL and the version
+.Ql 00 ,
+and a correct checksum;
+.It
+every entry is a regular file, of type
+.Ql 0
+or NUL: links, directories, devices, FIFOs, pax extended headers and GNU
+long names are refused;
+.It
+every entry's name, its prefix field and name field joined by
+.Ql / ,
+is one of the expected names, and no name is repeated or missing;
+.It
+every entry's size lies within the archive;
+.It
+after the last entry's data every byte up to
+.Ar size
+is zero, and there are at least two zero blocks of 512 bytes;
+.It
+.Pa SHA256SUMS
+lists exactly the outputs, never itself, one per line in any order, each as
+64 lowercase hexadecimal digits, two spaces, the name and a newline;
+.It
+each listed digest equals the SHA256 that
+.Nm
+computes for that file.
+.El
+.Pp
+An archive padded with zeros to a whole record is accepted.
+The SHA256 of the stored archive goes into the ledger; a review card's
+.Cm subject_sha256
+binds those exact bytes.
+.Ss Ledger
+Each commit appends one line to
+.Pa ledger
+with one
+.Xr write 2 ,
+then calls
+.Xr fsync 2 :
+.Dl Ar seconds verb job from to Op Ar sha256
+.Ar seconds
+is the time in seconds since the epoch;
+.Ar verb
+is
+.Cm add ,
+.Cm hold ,
+.Cm release ,
+.Cm next ,
+.Cm delivered
+or
+.Cm returned ;
+.Ar from
+and
+.Ar to
+are stage directory names, with
+.Ql tmp
+as the
+.Ar from
+of
+.Cm add ;
+.Ar sha256
+follows only for
+.Cm returned ,
+as the archive's digest.
+The same requests from the same state give the same decisions and the same
+ledger, apart from the first column.
+.Ss Durability
+Before a commit's
+.Xr rename 2 ,
+every file written for it is fsynced, and so is the directory it was
+written in.
+After the rename, the destination and source stage directories are
+fsynced, and then the ledger line is written and fsynced.
+Staging before a commit, in
+.Pa tmp/
+or inside the job's directory, is safe to redo when a transition is retried
+after a kill.
+.Ss Authority
+.Nm
+protects the custody of cards and returns: which seat may receive a card,
+that no card goes out twice, and that a return holds exactly what its card
+allows.
+It trusts
+.Xr card 1 ,
+.Pa /etc/route.conf ,
+the operator, and
+.Xr sshd 8
+to bind each channel to its seat; it trusts nothing a seat sends.
+Before any untrusted byte is read it confines itself with
+.Xr unveil 2
+and
+.Xr pledge 2 .
+Every verb sees only the state directory, read-only for
+.Cm status .
+.Cm add
+also sees its
+.Ar file
+and
+.Pa /etc/route.conf
+read-only, and
+.Pa /usr/local/bin/card
+for execution only; it alone may fork and exec, and it runs
+.Xr card 1
+with an empty environment and only descriptors 0 to 2.
+The other verbs never exec.
+A seat's authority is its key in the router user's
+.Pa authorized_keys ;
+the operator grants it by adding the forced-command key and revokes it by
+removing that key.
+A failure exits with a diagnostic and commits nothing partial; see
+.Sx CAVEATS
+for what a kill or power loss leaves.
+.Sh FILES
+.Nm
+never creates this layout; the install does.
+If a stage directory,
+.Pa tmp/ ,
+.Pa ledger
+or
+.Pa lock
+is missing,
+.Nm
+exits 2.
+.Bl -tag -width Ds
+.It Pa /var/route/
+The state directory.
+.It Pa /var/route/queue/
+Jobs waiting for their seat.
+.It Pa /var/route/sent/
+Jobs claimed with
+.Cm next .
+.It Pa /var/route/delivered/
+Jobs whose seat confirmed delivery.
+.It Pa /var/route/returned/
+Jobs whose return was accepted.
+.It Pa /var/route/held/
+Jobs the operator held.
+.It Pa /var/route/tmp/
+Staging for
+.Cm add ,
+on the same file system as the stage directories.
+.It Pa /var/route/ledger
+The history, opened for appending only.
+.It Pa /var/route/lock
+The file locked with
+.Xr flock 2 .
+.It Pa /var/route/ Ns Ar stage Ns Pa / Ns Ar job Ns Pa /card
+The exact bytes accepted by
+.Cm add .
+.It Pa /var/route/ Ns Ar stage Ns Pa / Ns Ar job Ns Pa /return_max
+The
+.Cm return_max
+in force when the job was added, in decimal, and a newline.
+.It Pa /var/route/ Ns Ar stage Ns Pa / Ns Ar job Ns Pa /held_from
+The stage the job was last held from, and a newline.
+.It Pa /var/route/ Ns Ar stage Ns Pa / Ns Ar job Ns Pa /return.tar
+In
+.Pa returned/ ,
+the exact accepted archive.
+In
+.Pa delivered/
+it can only be staging left by an interrupted return; it is rewritten by
+the next one.
+.It Pa /etc/route.conf
+The operator's parameters; see
+.Xr route.conf 5 .
+.It Pa /usr/local/bin/card
+The validator run by
+.Cm add .
+.El
+.Sh EXIT STATUS
+.Bl -tag -width Ds
+.It 0
+Done, including a repeated
+.Cm delivered
+or
+.Cm returned
+that changed nothing.
+.It 1
+Refused: a bad request or operand, the wrong seat, the wrong stage, a card
+refused by
+.Xr card 1
+or by the checks above, or a failed return check.
+Nothing changed.
+.It 2
+A usage error, a missing layout, unreadable configuration or state, a
+failure to run
+.Xr card 1 ,
+or an I/O error.
+.It 3
+Nothing to do:
+.Cm next
+found no job queued for this seat.
+.El
+.Sh EXAMPLES
+Make a state directory for tests:
+.Bd -literal -offset indent
+$ mkdir st st/queue st/sent st/delivered st/returned st/held st/tmp
+$ touch st/ledger st/lock
+.Ed
+.Pp
+Queue the example card of
+.Xr jobcard 5
+and list the state:
+.Bd -literal -offset indent
+$ route -d st add J001-PORT-CORE.card
+$ route -d st status
+queue J001-PORT-CORE alpha
+.Ed
+.Pp
+A forced-command line in the router user's
+.Pa authorized_keys
+binds a key to seat
+.Ql alpha :
+.Bd -literal -offset indent
+restrict,command="/usr/local/sbin/route serve alpha" ssh-ed25519 AAAA...
+.Ed
+.Pp
+The same requests, without
+.Xr ssh 1 :
+.Bd -literal -offset indent
+$ echo next | route -d st serve alpha > got
+$ head -n 1 got | cut -d ' ' -f 1,2
+card J001-PORT-CORE
+$ echo delivered J001-PORT-CORE | route -d st serve alpha
+.Ed
+.Pp
+Build and return the work:
+.Bd -literal -offset indent
+$ for f in core/core.c core/Makefile RETURN.md; do
+>	printf '%s  %s\en' "$(sha256 -q "$f")" "$f"; done > SHA256SUMS
+$ tar -cf ret.tar SHA256SUMS core/core.c core/Makefile RETURN.md
+$ { echo "returned J001-PORT-CORE $(wc -c < ret.tar | tr -d ' ')";
+>	cat ret.tar; } | route -d st serve alpha
+.Ed
+.Pp
+Had the seat never confirmed delivery, the operator could hold the job
+instead.
+It is never released to the queue again:
+.Bd -literal -offset indent
+$ route -d st hold J001-PORT-CORE
+$ route -d st release J001-PORT-CORE
+route: J001-PORT-CORE: held after leaving the queue; a retry is a new card
+$ echo $?
+1
+.Ed
+.Sh DIAGNOSTICS
+Each diagnostic is one line on standard error that begins with
+.Ql route:\ \& ,
+names the reason and, for an I/O error, the file and the system error.
+.Xr card 1
+writes its own diagnostics before
+.Nm
+refuses its card.
+.Sh SEE ALSO
+.Xr card 1 ,
+.Xr tar 1 ,
+.Xr flock 2 ,
+.Xr pledge 2 ,
+.Xr unveil 2 ,
+.Xr jobcard 5 ,
+.Xr route.conf 5 ,
+.Xr sshd 8
+.Sh AUTHORS
+Written by Claude (claude.ai/code), started by Claudia for Hugh, for plan
+goal SPINE-3.
+.Sh CAVEATS
+The ledger may lack its last line.
+A kill, or a failed directory or ledger write, after a commit's
+.Xr rename 2
+and before its ledger line leaves consistent state with that one line
+missing.
+The stage directories remain the truth.
+.Pp
+Nothing is ever resent.
+A job in
+.Pa sent/
+that is never confirmed delivered stays there;
+.Cm status
+shows it and the operator decides.
+To try again, the operator holds the job and adds a new card with a new
+.Cm job .
+.Pp
+After a power loss, every transition for which
+.Nm
+had exited 0 survives with its ledger line, provided the file system
+honours
+.Xr fsync 2
+on files and directories.
+A commit whose rename completed may survive without its ledger line.
+Staging that was not yet committed may survive, whole or in part, in
+.Pa tmp/
+or as
+.Pa return.tar
+or
+.Pa held_from
+inside a job's directory; it is never taken as committed.
+.Pp
+The faults for the proofs exist only in a separate test build,
+.Pa route-test ,
+made with
+.Ql make test-build ,
+which compiles with
+.Fl DROUTE_TEST .
+There, if the environment variable
+.Ev ROUTE_FAULT
+names a verb
+.Pf ( Cm add ,
+.Cm hold ,
+.Cm release ,
+.Cm next ,
+.Cm delivered
+or
+.Cm returned ) ,
+that verb kills itself with
+.Dv SIGKILL
+after its rename and directory fsyncs and before its ledger line;
+.Ev ROUTE_CONF
+and
+.Ev ROUTE_CARD
+replace
+.Pa /etc/route.conf
+and
+.Pa /usr/local/bin/card .
+The installed
+.Nm
+contains none of this and ignores its environment.
+.Pp
+.Xr jobcard 5
+allows output names that a ustar header cannot hold.
+.Cm add
+refuses such cards, since their jobs could never be returned.
+Tightening the grammar is debt for the next schema version of
+.Xr jobcard 5 ,
+owned by claudia.
+.Pp
+The state only grows.
+Nothing is ever removed: not jobs, not ledger lines, not the
+.Pa held_from
+file after a release, and not the staging directory that a refused or
+interrupted
+.Cm add
+leaves in
+.Pa tmp/ .
+The operator archives the state outside
+.Nm .
+.Pp
+A
+.Cm returned
+request reads and checks its archive before it takes the lock, so a slow
+upload holds up no other channel; the stage is checked again under the
+lock.
